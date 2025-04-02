@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAZDASÁGTAN KVÍZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003d7a;
+            transform: scale(0.98);
+        }
+
+        #error-count {
+            font-size: 16px;
+            color: red;
+        }
+
+        #answered {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #success-message {
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #failure-message {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #celebration {
+            display: none;
+            text-align: center;
+            font-size: 30px;
+            color: #ff0;
+        }
+
+        .fireworks {
+            animation: fireworks 1s infinite;
+        }
+
+        @keyframes fireworks {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>GAZDASÁGTAN KVÍZ</h1>
+        <div id="quiz">
+            <p id="question">Betöltés...</p>
+            <div id="answered">Kérdések válaszolva: 0 / 157</div>
+            <div id="answers"></div>
+            <div id="error-count">Hibák: 0 / 5</div>
+            <button id="next-button" style="display: none;" onclick="nextQuestion()">Tovább</button>
+        </div>
+        <div id="celebration" class="fireworks">
+            🎉🎆 Tűzijáték! Gratulálok a sikeres vizsgához! 🎆🎉
+        </div>
+        <div id="success-message"></div>
+        <div id="failure-message"></div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "A saját tulajdonú, nem kizárólag üzemi célú személygépkocsi esetében költségként elszámolható az üzemanyagköltségen kívül minden más költség címén",
+                options: [
+                    "9 Ft/km.",
+                    "8 Ft/km.",
+                    "15 Ft/km.",
+                    "5 Ft/km."
+                ],
+                correctAnswer:  "15 Ft/km."
+            },
+            {
+                question: "Mekkora a társasági adó mértéke? (nyereség után)",
+                options: [
+                    "A pozitív adóalap 4%-a.",
+                    "A pozitív adóalap 7%-a.",
+                    "A pozitív adóalap 5%-a.",
+                    "A pozitív adóalap 9%-a."
+                ],
+                correctAnswer: "A pozitív adóalap 9%-a."
+            },
+            {
+                question: "Mi a számviteli bizonylat?",
+                options: [
+                    "Minden olyan külső és belső okmány, amelyet a gazdasági esemény számviteli elszámolását támasztja alá.",
+                    "Csak az ÁFA törvényben meghatározott tartalommal kiállított számla.",
+                    "Minden olyan kapott számla, amelyet a mérlegkészítés napjáig a vállalkozás megkap.",
+                    "Minden olyan külső és belső okmány, amelyet nyomdai úton állítottak elő."
+                ],
+                correctAnswer: "Minden olyan külső és belső okmány, amelyet a gazdasági esemény számviteli elszámolását támasztja alá."
+            },
+            {
+                question: "Időnorma fogalma:",
+                options: [
+                    "Túlóra.",
+                    "Meghatározott munkafeladat elvégzéséhez szükséges munkaidő, ésszerű szervezési és vezetési feltételek mellett.",
+                    "Napi munkaidő.",
+                    "Meghatározott tevékenység elvégzéséhez szükséges időkeret."
+                ],
+                correctAnswer: "Meghatározott munkafeladat elvégzéséhez szükséges munkaidő, ésszerű szervezési és vezetési feltételek mellett."
+            },
+            {
+                question: "A mérlegben az eszközök és a források",
+                options: [
+                    "Csak a zárómérlegben egyenlőek.",
+                    "Csak a nyitómérlegben egyenlőek.",
+                    "Mindig egyenlők.",
+                    "Sohasem egyenlők."
+                ],
+                correctAnswer: "Mindig egyenlők."
+            },
+            {
+                question: "A személygépkocsi beszerzése esetén az adóalany levonhatja az előzetesen felszámított adót…",
+                options: [
+                    "Ha a beszerzés nem tovább értékesítési céllal történt.",
+                    "Az egyéni vállalkozó taxis, meghatározott feltételek mellett.",
+                    "Ha az adóalany gazdasági tevékenységéhez a személygépkocsi használata feltétlenül szükséges.",
+                    "Nem vonhatja le."
+                ],
+                correctAnswer: "Az egyéni vállalkozó taxis, meghatározott feltételek mellett."
+            },
+            {
+                question: "Az adózónak az adókötelezettségét érintő változását…",
+                options: [
+                    "15 napon belül be kell jelentenie az adóhatóságnak.",
+                    "5 napon belül be kell jelentenie az adóhatóságnak.",
+                    "3 napon belül be kell jelentenie az adóhatóságnak.",
+                    "10 napon belül be kell jelentenie az adóhatóságnak."
+                ],
+                correctAnswer: "15 napon belül be kell jelentenie az adóhatóságnak."
+            },
+            {
+                question: "Meddig kell benyújtani a bevallást a levont SZJA előlegről?",
+                options: [
+                    "A tárgyhónapot követő hó 20-áig.",
+                    "A tárgyhónapot követő hó 25-éig.",
+                    "Nem kell benyújtani.",
+                    "A tárgyhónapot követő hó 12-éig."
+                ],
+                correctAnswer:  "A tárgyhónapot követő hó 12-éig."
+            },
+            {
+                question: "A jogosulatlanul benyújtott adó-visszaigénylés esetén…",
+                options: [
+                    "Mulasztási bírságot állapít meg.",
+                    "Önellenőrzésre szólít fel.",
+                    "Az adóhatóság bírságot állapít meg, ha a kiutalás megtörtént.",
+                    "Az adóhatóság adóbírságot állapít meg."
+                ],
+                correctAnswer: "Az adóhatóság adóbírságot állapít meg."
+            },
+            {
+    question: "Mi az adóbevallás?",
+    options: [
+        "Papír alapon bevallott jövedelem.",
+        "Számlával bizonyított jövedelem.",
+        "Az adózó azonosításához, az adóalap, a mentességek, a kedvezmények, az adó, a költségvetési támogatás alapja és összege megállapításához szükséges adatokat tartalmazó dokumentum.",
+        "Papír, vagy elektronikus alapon bevallott jövedelem, melyet meg kell küldeni a NAV részére."
+    ],
+    correctAnswer: "Az adózó azonosításához, az adóalap, a mentességek, a kedvezmények, az adó, a költségvetési támogatás alapja és összege megállapításához szükséges adatokat tartalmazó dokumentum."
+},
+{
+    question: "Melyik költségeket sorolják a gurulóköltségek közé?",
+    options: [
+        "A szerviz, az amortizáció és javítási költségeket.",
+        "A biztosítási, a javítási költségeket, az amortizáció és a gépkocsivezető bérköltségét.",
+        "Csak az üzemanyag és a javítási költségeket.",
+        "Az üzemanyag, a gumi, a javítás-karbantartás, az amortizáció és a gépkocsivezető bérköltsége és annak közterhei."
+    ],
+    correctAnswer: "Az üzemanyag, a gumi, a javítás-karbantartás, az amortizáció és a gépkocsivezető bérköltsége és annak közterhei."
+},
+{
+    question: "Magyarországi adóhatóságok:",
+    options: [
+        "MNB.",
+        "PSZÁF. (Pénzügyi Szervek Állami Felügyelete)",
+        "NAV adóztatási szerve, mint állami adóhatóság; NAV vám szerve, mint vámhatóság; és az önkormányzat jegyzője, mint önkormányzati adóhatóság; fővárosi és megyei kormányhivatal, ha az önkormányzati adóhatóság felettes szervként jár el.",
+        "Illetékhivatal."
+    ],
+    correctAnswer: "NAV adóztatási szerve, mint állami adóhatóság; NAV vám szerve, mint vámhatóság; és az önkormányzat jegyzője, mint önkormányzati adóhatóság; fővárosi és megyei kormányhivatal, ha az önkormányzati adóhatóság felettes szervként jár el."
+},
+{
+    question: "Mi a közösségi adószám?",
+    options: [
+        "Közösség országaiban kereskedelmi tevékenységet folytató cégek származási ország nevére utaló adóhatósági azonosító száma, melyet a számlán NEM kell feltüntetni.",
+        "Közösség országaiban kereskedelmi tevékenységet folytató cégek származási ország nevére utaló adóhatósági azonosító száma, melyet a számlán fel kell tüntetni.",
+        "Kereskedelmi azonosító.",
+        "Közösség országaiban működő cégek származási ország nevére utaló adóhatósági azonosító jele, melyet a számlán fel kell tüntetni."
+    ],
+    correctAnswer:  "Közösség országaiban kereskedelmi tevékenységet folytató cégek származási ország nevére utaló adóhatósági azonosító száma, melyet a számlán fel kell tüntetni."
+},
+{
+    question: "Ki lehet az iparűzési adó alanya?",
+    options: [
+        "Akinek a vállalkozásából nyeresége származik.",
+        "Aki vállalkozó, és e minőségben végez nyereség-, illetve jövedelemszerző tevékenységet.",
+        "Aki hatósági engedély nélkül végez ellenérték fejében vállalkozói igazolványhoz kötött tevékenységet.",
+        "A település bármely lakója, aki munkaviszonyon kívüli tevékenységből jövedelemre tesz szert."
+    ],
+    correctAnswer: "Aki vállalkozó, és e minőségben végez nyereség-, illetve jövedelemszerző tevékenységet."
+},
+{
+    question: "Az egyéni vállalkozó útnyilvántartás vezetése helyett mekkora utat számolhat el havonta személygépkocsi üzleti célú használata után?",
+    options: [
+        "1500 km-t.",
+        "1000 km-t.",
+        "5000 km-t.",
+        "500 km-t."
+    ],
+    correctAnswer: "500 km-t."
+},
+{
+    question: "Ki dönthet a településen a helyi adó bevezetéséről?",
+    options: [
+        "A polgármester.",
+        "A képviselőtestület, fővárosban és megyei jogú városban a közgyűlés.",
+        "A jegyző.",
+        "A polgármester és a jegyző együtt."
+    ],
+    correctAnswer: "A képviselőtestület, fővárosban és megyei jogú városban a közgyűlés."
+},
+{
+    question: "Igaz, hogy…",
+    options: [
+        "Az önálló tevékenységnél a költségtérítés része a bevételnek.",
+        "Nem önálló tevékenységnél tételes költségelszámolás alkalmazható.",
+        "Egyéni vállalkozó 800km/hó szgk. átalányt útnyilvántartás nélkül elszámolhat.",
+        "A kormányrendelet mértékét meghaladó költségtérítés nem adható."
+    ],
+    correctAnswer: "Az önálló tevékenységnél a költségtérítés része a bevételnek."
+},
+{
+    question: "Milyen adótétellel adózik a reprezentációs költség?",
+    options: [
+        "A reprezentációként elszámolt költség 1,18-szorosa után 15 % Szja és 22 % EHO.",
+        "A reprezentációs az összegétől függetlenül adómentes.",
+        "16% Szja és 14% EHO.",
+        "15% társasági adó."
+    ],
+    correctAnswer: "A reprezentációként elszámolt költség 1,18-szorosa után 15 % Szja és 22 % EHO."
+},
+{
+    question: "Kit illet a beszedett helyi adóból származó bevétel?",
+    options: [
+        "Az állami költségvetést, melyből újraelosztás útján a rászorultságtól függően részesülnek a települések.",
+        "Megosztottan a helyi önkormányzatot és az állami költségvetést.",
+        "Teljes egészében az önkormányzat saját bevétele.",
+        "Megosztottan a helyi kormányhivatalt és az állami költségvetést."
+    ],
+    correctAnswer: "Megosztottan a helyi önkormányzatot és az állami költségvetést.",
+},
+{
+    question: "Hatósági eljárás akadályozása esetén milyen összegű mulasztási bírságot szabhat ki a NAV nem magánszemély adózó esetén?",
+    options: [
+        "500.000 Ft.",
+        "550.000 Ft.",
+        "450.000 Ft.",
+        "600.000 Ft."
+    ],
+    correctAnswer: "500.000 Ft."
+},
+{
+    question: "Meddig kell a társas vállalkozásnak a levont járulékot megfizetni?",
+    options: [
+        "Az elszámolt hónapot követő hó 10-éig.",
+        "Évente, az adóévet követő február 15-éig.",
+        "Negyedévente, a negyedévet követő hó 12-éig.",
+        "Az elszámolt hónapot követő hó 12-éig."
+    ],
+    correctAnswer: "Az elszámolt hónapot követő hó 12-éig."
+},
+{
+    question: "Hogyan fejezhető be legpontosabban az alábbi mondat? A beszámoló formája…",
+    options: [
+        "Az éves nettó árbevétel nagyságától, a mérleg főösszegétől, a foglalkoztatottak létszámától, mindezek határértékeitől függ.",
+        "A nyereségtől függ.",
+        "Az éves árbevételtől és a foglalkoztatottak számától függ.",
+        "A gazdálkodó szervezet elhatározásától függ kizárólag."
+    ],
+    correctAnswer: "Az éves nettó árbevétel nagyságától, a mérleg főösszegétől, a foglalkoztatottak létszámától, mindezek határértékeitől függ."
+},
+{
+    question: "A járulékbevallást mely szervhez kell benyújtani?",
+    options: [
+        "Önkormányzati Hivatal.",
+        "Megyei (fővárosi) kormányhivatal.",
+        "Nemzeti Adó- és Vámhivatal.",
+        "Nyugdíjbiztosítási Igazgatóság."
+    ],
+    correctAnswer: "Nemzeti Adó- és Vámhivatal."
+},
+{
+    question: "A vissza nem igényelhető göngyölített elszámolandó adó…",
+    options: [
+        "Korlátlan időn belül csökkenti a fizetendő adót.",
+        "Az elévülési időn belül a következő adó-megállapítási időszakban csökkenti a fizetendő adót.",
+        "Más adónemben fennálló adótartozására átvezethető.",
+        "Csak a következő adó-megállapítási időszakban csökkenti a fizetendő adót."
+    ],
+    correctAnswer: "Az elévülési időn belül a következő adó-megállapítási időszakban csökkenti a fizetendő adót."
+},
+{
+    question: "A Nemzeti Adó és Vámhivatal mikor engedheti el méltányosságból az adóbírságot?",
+    options: [
+        "Magánszemély kérésére.",
+        "Gazdasági társaság kérésére.",
+        "Magánszemély és gazdasági társaság kérésére.",
+        "Nem engedheti el."
+    ],
+    correctAnswer: "Magánszemély kérésére."
+},
+{
+    question: "Tárgyi eszköz fogalma:",
+    options: [
+        "Olyan tárgyiasult (dologi) eszközök, amelyek a vállalkozási tevékenységet közvetlenül, vagy közvetetten, tartósan szolgálják (1 évnél hosszabb ideig), függetlenül attól, hogy üzembe helyezésre kerültek-e, vagy sem.",
+        "Minden a telephelyen tárolt eszköz.",
+        "A vállalkozás tulajdonában lévő eszköz.",
+        "Olyan immateriális eszköz, amely a vállalkozási tevékenységet tartósan szolgálja (egy évnél hosszabb ideig), függetlenül attól, hogy van-e érteke, vagy sem."
+    ],
+    correctAnswer: "Olyan tárgyiasult (dologi) eszközök, amelyek a vállalkozási tevékenységet közvetlenül, vagy közvetetten, tartósan szolgálják (1 évnél hosszabb ideig), függetlenül attól, hogy üzembe helyezésre kerültek-e, vagy sem."
+},
+{
+    question: "Milyen jogszabály határozza meg a minimálbér és a garantált bérminimum összegét?",
+    options: [
+        "Társasági adótörvény.",
+        "Személyi jövedelemadó törvény.",
+        "Számviteli törvény.",
+        "Kormányrendelet."
+    ],
+    correctAnswer: "Kormányrendelet."
+},
+{
+    question: "Hol köteles megőrizni az adózó a bizonylatokat?",
+    options: [
+        "A bejelentett lakhelyén.",
+        "Az adóhatósághoz bejelentett helyen.",
+        "A könyvelőnél, hogy az bármikor ellenőrizhető legyen.",
+        "A székhelyén, telephelyén, az ingatlan fekvése szerinti helyen."
+    ],
+    correctAnswer:  "Az adóhatósághoz bejelentett helyen."
+},
+{
+    question: "Ki fizeti a gépkocsi regisztrációs adóját?",
+    options: [
+        "A márkakereskedő.",
+        "Minden esetben a bejegyzett tulajdonos.",
+        "Aki a regisztrációs eljárást kezdeményezte.",
+        "Az a személy, aki (amely) a forgalomba helyezést követően a törzskönyvben is tulajdonosként lesz feltüntetve."
+    ],
+    correctAnswer: "Aki a regisztrációs eljárást kezdeményezte." 
+},
+{
+    question: "A gazdálkodó működéséről, vagyoni, pénzügyi és jövedelmi helyzetéről az üzleti év könyveinek zárását követően….",
+    options: [
+        "Tájékoztatja a Nemzeti Adó és Vámhivatalt.",
+        "Könyvvezetéssel alátámasztott beszámolót köteles készíteni.",
+        "Zárszámadást köteles készíteni.",
+        "Jelentést köteles készíteni."
+    ],
+    correctAnswer: "Könyvvezetéssel alátámasztott beszámolót köteles készíteni."
+},
+{
+    question: "Az adózó az adóelőleg-fizetési kötelezettségének…",
+    options: [
+        "Önadózással, valamint törvényben meghatározott esetekben fizetési meghagyás alapján tesz eleget.",
+        "Önadózás formájában a tárgyévet megelőző öt év átlaga alapján tesz eleget.",
+        "Az adóhatóság határozata alapján tesz eleget.",
+        "Önadózás formájában a tárgyévet megelőző két év átlaga alapján tesz eleget."
+    ],
+    correctAnswer: "Önadózással, valamint törvényben meghatározott esetekben fizetési meghagyás alapján tesz eleget."
+},
+{
+    question: "Mely szerv NEM adóhatóság az alábbiak közül?",
+    options: [
+        "Fővárosi és megyei kormányhivatal, ha az önkormányzati adóhatóság felettes szervként jár el.",
+        "Jegyző.",
+        "Nemzeti Adó és Vámhivatal.",
+        "Rendőrség."
+    ],
+    correctAnswer: "Rendőrség."
+},
+{
+    question: "Mikor és meddig kell a fő állású egyéni vállalkozónak a szociális hozzájárulási adót megfizetnie?",
+    options: [
+        "Havonta, a tárgyhónapot követő 12-éig.",
+        "A vállalkozói kivét költségként történő elszámolását követő hó 12-éig.",
+        "Évente, az adóévet követő február 15-éig.",
+        "Negyedévente, a negyedévet követő hó 12-éig."
+    ],
+    correctAnswer: "Havonta, a tárgyhónapot követő 12-éig."
+},
+{
+    question: "Az alábbiak közül mely időszakra NEM kell járulékot fizetni?",
+    options: [
+        "A külföldi kiküldetés idejére.",
+        "A táppénz folyósítás ideje alatt.",
+        "A betegszabadság ideje alatt.",
+        "Szabadság alatt."
+    ],
+    correctAnswer: "A táppénz folyósítás ideje alatt.",
+},
+{
+    question: "Mi a számviteli mérleg?",
+    options: [
+        "Az a kétoldalú kimutatás, amely tartalmazza a vállalkozás eszközeinek és forrásainak pénzben kifejezett értékét.",
+        "Az a kétoldalú kimutatás, amely tartalmazza a vállalkozás által vásárolt tárgyi eszközök bekerülési értékét és az elszámolt értékcsökkenést.",
+        "Az a kimutatás, amely tartalmazza a vállalkozás birtokában lévő eszközök és aktívák felsorolását.",
+        "Az a kimutatás, amely tartalmazza a vállalkozás birtokában lévő források és passzívák felsorolását."
+    ],
+    correctAnswer: "Az a kétoldalú kimutatás, amely tartalmazza a vállalkozás eszközeinek és forrásainak pénzben kifejezett értékét."
+},
+{
+    question: "Az alábbiak közül melyik szervezet rendelkezik Magyarországon adóhatósági jogokkal?",
+    options: [
+        "A Gazdasági Versenyhivatal.",
+        "Nemzetgazdasági Minisztérium.",
+        "A Nemzeti Adó- és Vámhivatal vámszerve, mint vámhatóság.",
+        "A Közigazgatási és Igazságügyi Minisztérium."
+    ],
+    correctAnswer: "A Nemzeti Adó- és Vámhivatal vámszerve, mint vámhatóság."
+},
+{
+    question: "Hogyan veheti figyelembe az önálló tevékenységet végző magánszemély az üzemanyag árat?",
+    options: [
+        "Mindig a MOL árai alapján.",
+        "Csak a NAV által közzétett üzemanyag ár alapján.",
+        "A NAV által havonta közzétett üzemanyagár, vagy a számlákkal igazolt üzemanyag-vásárlás alapján.",
+        "Csak a számlákban szereplő üzemanyagár alapján."
+    ],
+    correctAnswer: "A NAV által havonta közzétett üzemanyagár, vagy a számlákkal igazolt üzemanyag-vásárlás alapján."
+},
+{
+    question: "A számla kötelező adattartamát mikor kell kiegészíteni a vevő adószámával?",
+    options: [
+        "A 3.000.000 Ft-ot elérő vagy meghaladó ÁFA- tartamú számla esetében.",
+        "A 2.000.000 Ft-ot elérő vagy meghaladó ÁFA- tartamú számla esetében.",
+        "A 100.000 Ft-ot elérő vagy meghaladó ÁFA- tartamú számla esetében.",
+        "Minden esetben."
+    ],
+    correctAnswer:  "Minden esetben."
+},
+{
+    question: "A Nemzeti Adó- és Vámhivatal (NAV) az adót méltányosságból:",
+    options: [
+        "A vállalkozások esetében akkor engedheti el, ha a pótlékot megfizetik.",
+        "Sohasem engedheti el.",
+        "Csak magánszemélyek kérelmére engedheti el.",
+        "Csak a vállalkozások esetében engedheti el."
+    ],
+    correctAnswer: "Csak magánszemélyek kérelmére engedheti el."
+},        
+{
+    question: "Elszámolható-e értékcsökkenés a nem saját tulajdonú személygépkocsi után?",
+    options: [
+        "Legfeljebb átalány-amortizáció számolható el.",
+        "Igen.",
+        "Csak a tevékenység megkezdését megelőző 3 évvel korábban bérbevett személygépkocsi esetén számolható el.",
+        "Nem."
+    ],
+    correctAnswer:"Nem."
+},
+{
+    question: "Meddig kell az egyéni vállalkozónak a vállalkozói jövedelemadó előlegét megfizetni?",
+    options: [
+        "Havonta, az adott hónapot követő hó 10-éig.",
+        "Az adóévet követő hó 12-éig.",
+        "A negyedévet követő hó 12-éig.",
+        "A vállalkozó jövedelmének mértékétől függően eltérő időközönként."
+    ],
+    correctAnswer: "A negyedévet követő hó 12-éig." 
+},
+{
+    question: "Ki minősül adózónak?",
+    options: [
+        "Az, akinek az adókötelezettségét önadózás útján kell teljesítenie.",
+        "Az, aki adóköteles bevételre tesz szert.",
+        "Csak az egyéni vállalkozó, a társas vállalkozás és az MNB.",
+        "Az, akire a törvény adókötelezettséget, adófizetési kötelezettséget ró."
+    ],
+    correctAnswer: "Az, akire a törvény adókötelezettséget, adófizetési kötelezettséget ró."
+},
+{
+    question: "Mi az utókalkuláció?",
+    options: [
+        "A tevékenység tényleges költségének meghatározása és összehasonlítása az előzetes kalkulációval.",
+        "Költségek kiszámítása.",
+        "A tevékenység megkezdése előtti költségkalkuláció.",
+        "A tevékenység folytatása közbeni költségek számba vétele."
+    ],
+    correctAnswer: "A tevékenység tényleges költségének meghatározása és összehasonlítása az előzetes kalkulációval."
+},
+{
+    question: "Mit nevezünk klíringnek?",
+    options: [
+        "Azokat a kereskedelmi megállapodásokat, amelyek pénzügyi teljesítése okmányos meghitelezéssel (akkreditív) történik.",
+        "Országok közötti kereskedelmi kapcsolat.",
+        "Országok közötti pénzügyi forgalmat, amelyet tartozások-követelések kölcsönös beszámításával bonyolítanak le oly módon, hogy pénzügyi teljesítés csak egy időszak lezárása és az egyenleg megállapítása után történik.",
+        "Országok közötti banki kapcsolatot."
+    ],
+    correctAnswer: "Országok közötti pénzügyi forgalmat, amelyet tartozások-követelések kölcsönös beszámításával bonyolítanak le oly módon, hogy pénzügyi teljesítés csak egy időszak lezárása és az egyenleg megállapítása után történik."
+},
+{
+    question: "Mely adónem NEM munkát terhelő adó az alábbiak közül?",
+    options: [
+        "Munkaerő-piaci járulék.",
+        "Egészségbiztosítási járulék.",
+        "Általános forgalmi adó.",
+        "Személyi jövedelemadó."
+    ],
+    correctAnswer: "Általános forgalmi adó."
+},
+{
+    question: "Mi a valuta fogalma?",
+    options: [
+        "Külföldi pénznemre szóló követelés.",
+        "Nemzeti fizetőeszközre szóló követelés.",
+        "Külföldnek minősülő ország törvényes fizetőeszköze.",
+        "Nemzetközi fizetőeszköz."
+    ],
+    correctAnswer: "Külföldnek minősülő ország törvényes fizetőeszköze."
+},
+{
+    question: "Jegyzett tőke fogalma:",
+    options: [
+        "A gazdálkodó vagyonának saját forrása, amelyet az alapítók, tulajdonosok bocsátottak véglegesen rendelkezésre.",
+        "Mérleg szerinti eredmény.",
+        "Az eredménytartalék kivételével, minden befizetés, amely az alaptőkét növeli.",
+        "A jegyzett, de be nem fizetett tőke és a befizetett alaptőke különbözete."
+    ],
+    correctAnswer: "A gazdálkodó vagyonának saját forrása, amelyet az alapítók, tulajdonosok bocsátottak véglegesen rendelkezésre."
+},
+{
+    question: "Az adózó minden olyan iratba betekinthet….",
+    options: [
+        "Amely rá vonatkozik.",
+        "Amely adózással kapcsolatos.",
+        "Amelyet az adónyilvántartások tartalmaznak.",
+        "Amely jogainak érvényesítéséhez, kötelezettségeinek teljesítéséhez szükséges."
+    ],
+    correctAnswer: "Amely jogainak érvényesítéséhez, kötelezettségeinek teljesítéséhez szükséges."
+},
+{
+    question: "Kiegészítő tevékenységet folytató egyéni vállalkozó milyen járulékot fizet?",
+    options: [
+        "Egészségügyi hozzájárulást.",
+        "Egészségbiztosítási járulékot.",
+        "Egészségügyi szolgáltatási járulékot.",
+        "Egészséget segítő járulékot."
+    ],
+    correctAnswer: "Egészségügyi szolgáltatási járulékot."
+},
+{
+    question: "Az adóhatóság által megállapított adót (ha a törvény másképp nem rendelkezik)…",
+    options: [
+        "A határozat jogerőre emelkedésétől számított 15 napon belül kell befizetni.",
+        "A határozat kézhezvételétől számított 8 napon belül kell befizetni.",
+        "A határozat kézhezvételétől számított 30 napon belül kell befizetni.",
+        "A jogerőre emelkedéstől számított 8 napon belül kell befizetni."
+    ],
+    correctAnswer: "A határozat jogerőre emelkedésétől számított 15 napon belül kell befizetni." 
+},
+{
+    question: "Korlátolt felelősségű társaság választhatja-e az egyszerűsített vállalkozói adót?",
+    options: [
+        "Csak akkor, ha azt az adóhatóságnak december 20-ig bejelenti.",
+        "Igen, bármikor.",
+        "Nem.",
+        "Akkor választhatja, ha az adóévet megelőző második adóév összes bevétele és az adóévet megelőző évben várható árbevétele nem haladja meg a 30 millió Ft-ot és nincs nyilvántartott adótartozása és az egyéb feltételeknek is megfelel."
+    ],
+    correctAnswer: "Akkor választhatja, ha az adóévet megelőző második adóév összes bevétele és az adóévet megelőző évben várható árbevétele nem haladja meg a 30 millió Ft-ot és nincs nyilvántartott adótartozása és az egyéb feltételeknek is megfelel."
+},
+{
+    question: "Az iparűzési tevékenység adókötelezettsége mikor kezdődik? (helyi adó)",
+    options: [
+        "A cégbírósági bejegyzés napjával.",
+        "A hatósági engedély kiadásának napjával.",
+        "A tevékenység településen való megkezdésének napjával.",
+        "A vállalkozás megkezdését követő 2 év múlva."
+    ],
+    correctAnswer: "A tevékenység településen való megkezdésének napjával."
+},
+{
+    question: "Mi a deviza fogalma?",
+    options: [
+        "Készpénz.",
+        "Külföldi pénznemre szóló követelés.",
+        "Banki átutalás egy formája.",
+        "Nemzeti fizetőeszköz."
+    ],
+    correctAnswer: "Külföldi pénznemre szóló követelés."
+},
+ {
+    question: "Az egyéni vállalkozó költségként NEM veheti figyelembe…",
+    options: [
+        "Az olyan kiadást, amely akár részben is személyes, vagy családi szükségletének kielégítését célozza.",
+        "Az értékcsökkenési leírásként érvényesíthető összeget.",
+        "A vállalkozói jövedelem kivétet.",
+        "A tevékenység után kötelezően befizetett iparűzési adó összegét."
+    ],
+    correctAnswer:"Az olyan kiadást, amely akár részben is személyes, vagy családi szükségletének kielégítését célozza."
+},
+{
+    question: "Melyik NEM adókötelezettség az alábbiak közül?",
+    options: [
+        "Adó-megállapítás.",
+        "Bevallás.",
+        "Bejelentés.",
+        "Tájékoztatás."
+    ],
+    correctAnswer: "Tájékoztatás."
+},
+{
+    question: "Kit terhel a szociális hozzájárulási adó?",
+    options: [
+        "A munkavállalót.",
+        "A munkaadót és a munkavállalót.",
+        "A munkaadót.",
+        "A biztosítottat."
+    ],
+    correctAnswer:"A munkaadót." 
+},
+{
+    question: "Költség fogalma:",
+    options: [
+        "A gazdasági tevékenység során felhasznált termelési eszközök pénzben kifejezett értéke.",
+        "Lakbér.",
+        "Bérköltség.",
+        "Az összes felmerült kiadás egy gazdálkodó életében."
+    ],
+    correctAnswer: "A gazdasági tevékenység során felhasznált termelési eszközök pénzben kifejezett értéke."
+},
+{
+    question: "Biztosítottnak számít-e a betéti társaság természetes személy kültagja?",
+    options: [
+        "Igen, minden esetben.",
+        "Legfeljebb akkor, ha a társaság tevékenységében személyesen közreműködik.",
+        "Nem.",
+        "Csak akkor, ha a társaság tevékenységében személyesen nem működik közre."
+    ],
+    correctAnswer: "Legfeljebb akkor, ha a társaság tevékenységében személyesen közreműködik."
+},
+{
+    question: "Mikor és meddig kell a fő állású egyéni vállalkozónak a szociális hozzájárulási adót megfizetnie?",
+    options: [
+        "Havonta, a tárgyhónapot követő 12-éig.",
+        "A vállalkozói kivét költségként történő elszámolását követő hó 12-éig.",
+        "Évente, az adóévet követő február 15-éig.",
+        "Negyedévente, a negyedévet követő hó 12-éig."
+    ],
+    correctAnswer: "Havonta, a tárgyhónapot követő 12-éig."
+},
+{
+    question: "Milyen jogi aktussal vezethető be a helyi adó?",
+    options: [
+        "A Kormányhivatal által kiadott határozattal.",
+        "Az adóhatóság által kiadott egyedi határozattal.",
+        "Önkormányzati rendelettel.",
+        "Képviselőtestületi határozattal."
+    ],
+    correctAnswer: "Önkormányzati rendelettel."
+},
+{
+    question: "Hatósági eljárás akadályozása esetén milyen összegű mulasztási bírságot szabhat ki a NAV nem magánszemély adózó esetén?",
+    options: [
+        "450.000 Ft.",
+        "500.000 Ft.",
+        "550.000 Ft.",
+        "600.000 Ft."
+    ],
+    correctAnswer: "500.000 Ft."
+},
+{
+    question: "A gépjárműadó alanya az a személy, aki…",
+    options: [
+        "A járműnyilvántartásban az év első napján üzemben tartóként, ennek hiányában tulajdonosként szerepel.",
+        "A járműnyilvántartásban az év utolsó napján üzemben tartóként, ennek hiányában tulajdonosként szerepel.",
+        "Aki az adásvételi szerződésben tulajdonosként szerepel.",
+        "A járművet birtokában tartja."
+    ],
+    correctAnswer: "A járműnyilvántartásban az év első napján üzemben tartóként, ennek hiányában tulajdonosként szerepel."
+},
+{
+    question: "Mennyi az adóbírság mértéke bevétel eltitkolása esetén?",
+    options: [
+        "Az adóhiánnyal megegyező összeg.",
+        "A jegybanki alapkamat 5 százalékponttal növelt mértéke.",
+        "A jegybanki alapkamat.",
+        "Az adóhiány 200%-a."
+    ],
+    correctAnswer: "Az adóhiány 200%-a."
+},
+{
+    question: "Kikre nem terjed ki a számviteli törvény hatálya?",
+    options: [
+        "A költségvetési szervekre.",
+        "Az egyéni vállalkozókra.",
+        "Az előtársaságokra.",
+        "Az alapítványokra."
+    ],
+    correctAnswer:  "Az egyéni vállalkozókra."
+},
+{
+    question: "NEM szűnik meg a magánszemély adókötelezettsége a…",
+    options: [
+        "A magánszemély halálával.",
+        "Tevékenysége szünetelésével.",
+        "Kitelepüléssel.",
+        "Tevékenysége megszűnésével (vállalkozó esetén)."
+    ],
+    correctAnswer: "Kitelepüléssel."
+},
+{
+    question: "Mit jelent az adózási önellenőrzés?",
+    options: [
+        "Az adózó által bevallott adó helyesbítése.",
+        "Adóhatóság ellenőrzése.",
+        "Adóbevallás javítása.",
+        "Az adó helyesbítése az Adóhatóság által."
+    ],
+    correctAnswer: "Az adózó által bevallott adó helyesbítése."
+},
+{
+    question: "Mi az adókedvezmények lényege?",
+    options: [
+        "A jövedelmet csökkentik.",
+        "Az összevont adóalap adóját csökkentik.",
+        "Az adókulcsot csökkentik.",
+        "Az adóalapot csökkentik."
+    ],
+    correctAnswer: "Az összevont adóalap adóját csökkentik."
+},
+{
+    question: "A társasági adó feltöltési kötelezettséget milyen dátummal és milyen mértékig köteles teljesíteni a kettős könyvvezető adóalanya?",
+    options: [
+        "December 20-áig, a várható fizetendő adó 100%-áig.",
+        "Január 15-ig, a várható fizetendő adó 80%-áig.",
+        "Február15-ig, a várható fizetendő adó 70%-áig.",
+        "Március 31-ig, a várható fizetendő adó 90%-áig."
+    ],
+    correctAnswer: "December 20-áig, a várható fizetendő adó 100%-áig."
+},
+{
+    question: "Az alábbiak közül melyik vállalkozásnak nincs adó feltöltési kötelezettsége?",
+    options: [
+        "A feltöltési kötelezettség elnevezés megtévesztő, mert az önkéntes alapon működik.",
+        "Minden vállalkozónak kötelezően ki kell egészíteni az év során befizetett adó előlegét a várható mértékének 100%-áig.",
+        "Mentesül a felöltési kötelezettség alól az a kettős könyvvitel vezető vállalkozás, amelynek tárgyévet megelőző évi éves nettó árbevétele nem éri el a 100 millió forintot.",
+        "A tőzsdén jegyzett vállalkozásoknak, mert közvetlenül befolyásolja a részvényárfolyamokat."
+    ],
+    correctAnswer: "Mentesül a felöltési kötelezettség alól az a kettős könyvvitel vezető vállalkozás, amelynek tárgyévet megelőző évi éves nettó árbevétele nem éri el a 100 millió forintot."
+},
+{
+    question: "A helyi adó hatálya NEM terjed ki?",
+    options: [
+        "A Magyar Államra.",
+        "A külföldi vállalkozásra.",
+        "A külföldi szervezetre.",
+        "A külföldi magánszemélyre."
+    ],
+    correctAnswer: "A Magyar Államra."
+},
+{
+    question: "Az egyszeres könyvvitelt vezető vállalkozás…",
+    options: [
+        "Csak pénztárkönyvet vezet.",
+        "Csak naplófőkönyvet vezet.",
+        "Pénzforgalmi nyilvántartást, valamint kiegészítő és analitikus nyilvántartásokat vezet.",
+        "Csak analitikus nyilvántartást vezet."
+    ],
+    correctAnswer: "Pénzforgalmi nyilvántartást, valamint kiegészítő és analitikus nyilvántartásokat vezet."
+},
+{
+    question: "Számla fogalma:",
+    options: [
+        "Bármilyen pénztárblokk.",
+        "Minden olyan okirat, amely megfelel az ÁFA törvény meghatározott feltételeinek.",
+        "Minden olyan okirat, amely az árat tartalmazza.",
+        "Amire az van ráírva, hogy számla."
+    ],
+    correctAnswer: "Minden olyan okirat, amely megfelel az ÁFA törvény meghatározott feltételeinek."
+},
+{
+    question: "Mi az önálló tevékenységből származó jövedelem?",
+    options: [
+        "Az önálló tevékenységből származó jövedelemnek a 75%-a.",
+        "Az önálló tevékenységgel összefüggésben kapott készpénz.",
+        "Az önálló tevékenységből származó bevételnek költségek levonása után fennmaradó része, vagy a bevétel 90%-a.",
+        "Az önálló tevékenységből származó bevétel teljes egésze."
+    ],
+    correctAnswer: "Az önálló tevékenységből származó bevétel teljes egésze."
+},
+{
+    question: "Mennyi az iparűzési adó évi mértékének felső határa?",
+    options: [
+        "Az adóalap 1 százaléka, míg a napi átalány 5.000 Ft.",
+        "Az adóalap 3 ezreléke, míg a napi átalány 500 Ft.",
+        "Nincs felső határ.",
+        "Az adóalap 2 százaléka, az ideiglenes jelleggel végzett tevékenység esetén pedig naptári naponként 5.000 Ft."
+    ],
+    correctAnswer: "Az adóalap 2 százaléka, az ideiglenes jelleggel végzett tevékenység esetén pedig naptári naponként 5.000 Ft."
+},
+{
+    question: "Milyen esetben NINCS helye mulasztási bírság megállapításának?",
+    options: [
+        "A hibásan benyújtott bevallás esetén.",
+        "Bevallási késedelem esetén.",
+        "Ha az adózó késedelmét annak igazolásával menti ki, hogy úgy járt el, ahogy az adott helyzetben elvárható.",
+        "Ha nem a megfelelő adóösszeg lett megfizetve."
+    ],
+    correctAnswer: "Ha az adózó késedelmét annak igazolásával menti ki, hogy úgy járt el, ahogy az adott helyzetben elvárható."
+},
+{
+    question: "Hogyan történik a társasági adóelőleg megállapítása?",
+    options: [
+        "Önadózás útján.",
+        "Az adóhivatal adókivető határozata alapján, amelyet fizetési meghagyásban közöl.",
+        "Az éves várható nyereség után mindenki maga dönti el, mennyi előleget fizet.",
+        "Önadózással, ennek elmulasztása esetén fizetési meghagyással."
+    ],
+    correctAnswer: "Önadózással, ennek elmulasztása esetén fizetési meghagyással."
+},
+{
+    question: "Hatósági eljárás akadályozása esetén milyen összegű mulasztási bírságot szabhat ki a NAV a magánszemély esetén?",
+    options: [
+        "200.000 Ft",
+        "250.000 Ft.",
+        "300.000 Ft.",
+        "400.000 Ft."
+    ],
+    correctAnswer: "200.000 Ft"
+},
+{
+    question: "Melyik NEM számviteli alapelv?",
+    options: [
+        "Összemérés elve.",
+        "Valódiság elve.",
+        "Nyilvánosság elve.",
+        "Folytonosság elve."
+    ],
+    correctAnswer: "Nyilvánosság elve."
+},
+{
+    question: "Az alábbiak közül mikor nem kell a változás bejelentési kötelezettséget teljesíteni a Nemzeti Adó- és Vámhivatalhoz?",
+    options: [
+        "A könyvvezetési mód változása esetén.",
+        "A levelezési cím változása esetén.",
+        "A pénzforgalmi jelzőszám változása esetén.",
+        "A vállalkozó táppénze esetén."
+    ],
+    correctAnswer: "A pénzforgalmi jelzőszám változása esetén."
+},
+{
+    question: "Milyen összegű mulasztási bírsággal sújtható pénztárgép kötelező használatával kapcsolatos jogszabályban foglalt kötelezettségek megszegése esetén a nem természetes személy?",
+    options: [
+        "300.000 Ft.",
+        "400.000 Ft.",
+        "500.000 Ft.",
+        "1.000.000 Ft."
+    ],
+    correctAnswer: "1.000.000 Ft."
+},
+{
+    question: "Ki az általános forgalmi adó alanya?",
+    options: [
+        "Az a természetes személy, aki munkaviszonyban, vagy olyan munkavégzésre irányuló egyéb jogviszony keretében végez tevékenységet, amely a megbízó felelősségével alá- és fölérendeltségi helyzetet jelent a teljesítés feltételeiben és díjazásában.",
+        "Az a jogképes személy vagy szervezet, aki a saját nevében gazdasági tevékenységet végez, tekintet nélkül annak helyére, céljára, eredményére.",
+        "Az a jogképes személy vagy szervezet, aki a saját neve alatt gazdasági tevékenységet folytat, jogokat szerezhet, kötelezettségeket vállalhat.",
+        "Az a külföldön bejegyzett adóalany, aki belföldön gazdasági tevékenységet nem végez."
+    ],
+    correctAnswer: "Az a jogképes személy vagy szervezet, aki a saját nevében gazdasági tevékenységet végez, tekintet nélkül annak helyére, céljára, eredményére."
+},
+{
+    question: "Mi növeli az adózás előtti eredményt, mint nem a vállalkozás érdekében felmerülő költség?",
+    options: [
+        "A törvényben meghatározott magánszemély javára kötött díja.",
+        "A reprezentáció címén felmerülő természetbeni juttatás.",
+        "A hiányzó tárgyi eszköz nyilvántartási értéke, ha megállapítható, hogy a hiány megfelelő gondosság mellett nem merült volna fel.",
+        "A szakszervezeti tisztségviselő számára biztosított munkaidő-kedvezményre törvény alapján fizetett távolléti díj."
+    ],
+    correctAnswer: "A hiányzó tárgyi eszköz nyilvántartási értéke, ha megállapítható, hogy a hiány megfelelő gondosság mellett nem merült volna fel."
+},
+{
+    question: "Milyen összegű mulasztási bírsággal sújtható pénztárgép kötelező használatával kapcsolatos jogszabályban foglalt kötelezettségek megszegése esetén a természetes személy?",
+    options: [
+        "1.000.000 Ft",
+        "500.000 Ft.",
+        "900.000 Ft.",
+        "800.000 Ft."
+    ],
+    correctAnswer: "500.000 Ft."
+},
+{
+    question: "Adómentes juttatásnak minősül-e a vállalkozás ügyvezető igazgatója részére vásárolt öltöny?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha kizárólag a vállalkozási tevékenységhez használja az öltönyt.",
+        "Nem, mert ez személyes (utcai) viseletre is alkalmas.",
+        "Legfeljebb négy évig, mert ennyi a kihordási ideje."
+    ],
+    correctAnswer: "Nem, mert ez személyes (utcai) viseletre is alkalmas."
+},
+{
+    question: "Hogyan adózik az egyéni vállalkozó költségként elszámolt vállalkozói kivétje?",
+    options: [
+        "A vállalkozói kivét költségként nem számolható el, 19%-os vállalkozói személyi jövedelemadóval adóköteles.",
+        "A költségként elszámolt vállalkozói kivét önálló tevékenység jövedelmének számít, 15% Szja terheli.",
+        "A költségként elszámolt vállalkozói kivét után az egyéni vállalkozó 35%-os osztalékadót fizet.",
+        "A költségként elszámolt vállalkozói kivét után az egyéni vállalkozó 20%-os osztalékadót fizet."
+    ],
+    correctAnswer: "A költségként elszámolt vállalkozói kivét önálló tevékenység jövedelmének számít, 15% Szja terheli."
+},
+{
+    question: "A pénzforgalmi számla nyitására kötelezett adózó más pénzforgalmi számla nyitására kötelezett adózónak szerződés alapján szerződésenként egy naptári hónapban milyen összegben fizethet készpénzzel?",
+    options: [
+        "Legfeljebb 1.500.000 Ft összegben.",
+        "Minden esetben.",
+        "Legfeljebb 2.000.000 Ft összegben.",
+        "Legfeljebb 3.000.000 Ft összegben."
+    ],
+    correctAnswer: "Legfeljebb 1.500.000 Ft összegben."
+},
+{
+    question: "Milyen gyakorisággal kell az egyéni vállalkozónak a pénztárkönyvben az adatsorokat összesíteni és lezárni?",
+    options: [
+        "Havonta, az adott hónapot követő 5-ig",
+        "Negyedévente, az esedékes hónap 20-áig.",
+        "Az adó, adóelőleg megállapítására előírt időszakonként.",
+        "A bejelentett adóellenőrzés megkezdését megelőző 3 nappal."
+    ],
+    correctAnswer:"Az adó, adóelőleg megállapítására előírt időszakonként."
+},
+{
+    question: "Kell-e adóbevallást benyújtani akkor, ha a vállalkozónak az adott időszakban nem keletkezett adófizetési kötelezettsége?",
+    options: [
+        "Általában igen.",
+        "Csak akkor, ha erre az adóhatóság külön felszólítja.",
+        "Csak akkor, ha év közben az adót nem fizette meg.",
+        "Nem."
+    ],
+    correctAnswer: "Általában igen."
+},
+ {
+    question: "Mi NEM az éves beszámoló része?",
+    options: [
+        "Eredmény-kimutatás.",
+        "Kiegészítő melléklet.",
+        "Mérleg.",
+        "Társasági adóbevallás."
+    ],
+    correctAnswer: "Társasági adóbevallás."
+},
+{
+    question: "Az alábbiak közül mit nem számolhat el az egyéni vállalkozó költségként?",
+    options: [
+        "A saját személyi jövedelemadóját.",
+        "Hivatali, üzleti utazás esetén az utazás és szállítás díját.",
+        "Az egyéni vállalkozó alkalmazottja részére kifizetett bért és közterheit.",
+        "A köztestület számára fizetett tagdíjat."
+    ],
+    correctAnswer: "A saját személyi jövedelemadóját."
+},
+{
+    question: "Díjszámítás fogalma:",
+    options: [
+        "Az adásvételi ügyleteknél az eladási feltételek és a vételár eladó és vevő közötti rögzítése.",
+        "Az áru költsége.",
+        "Termelési ár.",
+        "A díjnak a költségek számbavétele utáni megállapítása."
+    ],
+    correctAnswer: "Az adásvételi ügyleteknél az eladási feltételek és a vételár eladó és vevő közötti rögzítése."
+},
+{
+    question: "Mi a különbség az adó és a díj között?",
+    options: [
+        "Semmi, azonos tartalommal bírnak.",
+        "Adó ellenszolgáltatással jár, a díj nem.",
+        "A díj ellenszolgáltatással jár, az adó nem.",
+        "A díj rendszeres fizetési kötelezettséget jelent, az adó viszont nem."
+    ],
+    correctAnswer: "A díj ellenszolgáltatással jár, az adó nem."
+},
+{
+    question: "Az adótartozás végrehajtásához fűződő jog…",
+    options: [
+        "Az ellenőrzési határozat jogerőre emelkedése évének utolsó napjától számított 5 év elteltével évül el.",
+        "Az esedékesség naptári évének utolsó napjától számított 4 év elteltével évül el.",
+        "Az ellenőrzési határozat jogerőre emelkedésétől számított 5 év elteltével évül el.",
+        "Az esedékesség naptári évének utolsó napjától számított 5 év elteltével évül el."
+    ],
+    correctAnswer:  "Az esedékesség naptári évének utolsó napjától számított 4 év elteltével évül el."
+},
+{
+    question: "Mikor kell az adót megfizetni?",
+    options: [
+        "A bevallással egyidejűleg.",
+        "A jogerőre emelkedéskor.",
+        "Az esedékességkor.",
+        "A bevallást követő 8 napon belül."
+    ],
+    correctAnswer: "Az esedékességkor."
+},
+{
+    question: "Hitelképesség fogalma:",
+    options: [
+        "A hitelfelvevő személy jövedelmi és vagyoni helyzetének kivizsgálása, amely a hitelfelvételt lehetővé teszi.",
+        "A hitelfelvevő személy jövedelmi, társadalmi és vagyoni helyzetének kivizsgálása, amely a hitelfelvételt lehetővé teszi.",
+        "Tudja-e fizetni a hitelt.",
+        "A hitelfelvevő helyzetének vizsgálatát, amely alapján a hitel felvétele lehetővé válik."
+    ],
+    correctAnswer: "A hitelfelvevő személy jövedelmi és vagyoni helyzetének kivizsgálása, amely a hitelfelvételt lehetővé teszi."
+},
+{
+    question: "Általában milyen mértékű jövedelemadót köteles fizetni az egyéni vállalkozó?",
+    options: [
+        "A vállalkozói kivét után 16 % adót, a vállalkozói adóalap után 9% és 16%-os adót, az osztalékalap után 23%, illetve 35%-os adót.",
+        "A vállalkozói kivét után 15 %-os adót, a vállalkozói adóalap után 9% adót, az osztalékalap után 15%-os adót.",
+        "A vállalkozói kivét után nem adózik, a vállalkozói adóalap és az osztalékalap után 10% és 15%, illetve 35%-os adót.",
+        "A vállalkozói kivét után 25 % - os, a vállalkozói adóalap után 16%-os, az osztalékalap után 30%-os adót."
+    ],
+    correctAnswer: "A vállalkozói kivét után 15 %-os adót, a vállalkozói adóalap után 9% adót, az osztalékalap után 15%-os adót."
+},
+{
+    question: "Az alábbiak közül melyik tartozik a „források” fogalomkörébe?",
+    options: [
+        "Követelések.",
+        "Készletek.",
+        "Kötelezettségek.",
+        "Értékpapírok."
+    ],
+    correctAnswer: "Kötelezettségek."
+},
+{
+    question: "Kell-e adóbevallást benyújtani akkor, ha az adózó az adót már megfizette?",
+    options: [
+        "Igen, mert az adó megfizetése a bevallást nem pótolja.",
+        "Csak akkor, ha nem egyéni cégként működik.",
+        "Csak akkor, ha többletfizetés történt és vissza kívánja igényelni a különbözetet.",
+        "Nem."
+    ],
+    correctAnswer: "Igen, mert az adó megfizetése a bevallást nem pótolja."
+},
+{
+    question: "Ki alanya az iparűzési adónak?",
+    options: [
+        "A színész.",
+        "Az orvos, az ügyvéd.",
+        "Az a vállalkozó, aki az önkormányzat területén állandó vagy ideiglenes jelleggel vállalkozási tevékenységet végez.",
+        "Akinek a vállalkozásából nyeresége származik."
+    ],
+    correctAnswer: "Az a vállalkozó, aki az önkormányzat területén állandó vagy ideiglenes jelleggel vállalkozási tevékenységet végez."
+},
+{
+    question: "Hogyan állapítja meg az adózó az adót?",
+    options: [
+        "Önadózással.",
+        "Bevallással.",
+        "Adatszolgáltatással.",
+        "Adólevonással."
+    ],
+    correctAnswer: "Önadózással."
+},
+{
+    question: "Mely jövedelem NEM különadózó jövedelem a személyi jövedelemadó szempontjából?",
+    options: [
+        "Nem önálló tevékenységből származó jövedelem.",
+        "Osztalékadóból származó jövedelem.",
+        "Vagyonátruházásból származó jövedelem.",
+        "Nyereményből származó jövedelem."
+    ],
+    correctAnswer: "Nem önálló tevékenységből származó jövedelem."
+},
+{
+    question: "Kell-e társasági adóelőleget fizetnie a jogelőd nélkül alakult társaságnak?",
+    options: [
+        "Csak akkor, ha a társaság várható nyeresége eléri az 5 millió forintot.",
+        "Nem.",
+        "Csak akkor, ha a társaság várható nyeresége eléri a 25 millió forintot.",
+        "Igen, az adóhatóság által megszabott mértékben, a várható nyereségtől függően."
+    ],
+    correctAnswer: "Nem."
+},       
+{
+    question: "Igaz, hogy…",
+    options: [
+        "Az önálló tevékenységnél a költségtérítés része a bevételnek.",
+        "Nem önálló tevékenységnél tételes költségelszámolás alkalmazható.",
+        "Egyéni vállalkozó 800 km/hó szgk. átalányt útnyilvántartás nélkül elszámolhat.",
+        "A kormányrendelet mértékét meghaladó költségtérítés nem adható."
+    ],
+    correctAnswer:"Az önálló tevékenységnél a költségtérítés része a bevételnek."
+},
+{
+    question: "A jogosulatlanul benyújtott adó-visszaigénylés esetén…",
+    options: [
+        "Az adóhatóság adóbírságot állapít meg.",
+        "Az adóhatóság bírságot állapít meg, ha a kiutalás megtörtént.",
+        "Önellenőrzésre szólít fel.",
+        "Mulasztási bírságot állapít meg."
+    ],
+    correctAnswer: "Az adóhatóság adóbírságot állapít meg."
+},
+{
+    question: "Mit nevezünk kereskedelmi hitelnek?",
+    options: [
+        "A kereskedelmi bankok által folyósított hiteleket.",
+        "A kereskedelmi tevékenységet végző vállalkozások által nyújtott kölcsönöket.",
+        "Az egymással áruszállítási, vagy szolgáltatási jogviszonyban álló vállalkozók által adott halasztott fizetést, vagy előleget.",
+        "A kereskedelmi hitel fogalma a pénzügyekben nem értelmezhető."
+    ],
+    correctAnswer: "Az egymással áruszállítási, vagy szolgáltatási jogviszonyban álló vállalkozók által adott halasztott fizetést, vagy előleget."
+},
+{
+    question: "Milyen nyelven állítható ki a számla?",
+    options: [
+        "Magyar és angol nyelven.",
+        "Csak magyar nyelven.",
+        "Magyar, angol, francia és német nyelven.",
+        "Magyar nyelven vagy élő idegen nyelven."
+    ],
+    correctAnswer: "Magyar nyelven vagy élő idegen nyelven."
+},
+{
+    question: "A könyvvezetés az a tevékenység, amelynek keretében a gazdálkodó a tevékenysége során előforduló…",
+    options: [
+        "Vagyoni és pénzügyi helyzetére kiható gazdasági eseményekről folyamatosan nyilvántartást vezet és azt az üzleti év végével lezárja.",
+        "Vagyoni, pénzügyi, jövedelmi helyzetére kiható gazdasági eseményekről folyamatosan nyilvántartást vezet és azt az üzleti év végével lezárja.",
+        "Jövedelmi és pénzügyi helyzetére kiható gazdasági eseményekről folyamatosan nyilvántartást vezet és azt az üzleti év végével lezárja.",
+        "Vagyoni, pénzügyi, jövedelmi helyzetére kiható gazdasági eseményekről folyamatosan nyilvántartást vezet."
+    ],
+    correctAnswer: "Vagyoni, pénzügyi, jövedelmi helyzetére kiható gazdasági eseményekről folyamatosan nyilvántartást vezet és azt az üzleti év végével lezárja."
+},
+{
+    question: "Az egyéni vállalkozót milyen mértékű vállalkozói személyi jövedelemadó fizetési kötelezettség terheli?",
+    options: [
+        "A vállalkozói adóalap után 10%.",
+        "A vállalkozói adóalap után 9%.",
+        "A vállalkozói adóalap után 15%.",
+        "A vállalkozói adóalap után 16%."
+    ],
+    correctAnswer: "A vállalkozói adóalap után 9%."
+},
+{
+    question: "Mi a bankkártya fogalma:",
+    options: [
+        "Egy olyan készpénzfizetést helyettesítő eszköz, melyet a bank ad(hat) a nála számlát vezető ügyfeleinek.",
+        "Utazási csekk.",
+        "Adattábla.",
+        "Hitelt megtestesítő készpénzt helyettesítő fizetési eszköz."
+    ],
+    correctAnswer: "Egy olyan készpénzfizetést helyettesítő eszköz, melyet a bank ad(hat) a nála számlát vezető ügyfeleinek."
+},
+{
+    question: "Mekkora a társasági adó mértéke?",
+    options: [
+        "A pozitív adóalap 9%-a.",
+        "A pozitív adóalap 16%-a.",
+        "A pozitív adóalap 10%-a.",
+        "A pozitív adóalap 20%-a."
+    ],
+    correctAnswer: "A pozitív adóalap 9%-a."
+},
+{
+    question: "Mely állítás NEM igaz az adóra?",
+    options: [
+        "Lehet fogyasztási típusú.",
+        "Lehet ellenszolgáltatással járó.",
+        "Nem jár ellenszolgáltatással.",
+        "Lehet vagyoni típusú."
+    ],
+    correctAnswer: "Lehet ellenszolgáltatással járó."
+},
+{
+    question: "A munkaviszonyból származó jövedelem milyen jövedelemnek minősül?",
+    options: [
+        "Önálló tevékenységből származó jövedelem.",
+        "Szellemi szabadfoglalkozásból származó jövedelem.",
+        "Nem önálló tevékenységből származó jövedelem.",
+        "Egyéni vállalkozói tevékenységből származó jövedelem."
+    ],
+    correctAnswer: "Nem önálló tevékenységből származó jövedelem."
+},
+{
+    question: "Az üzleti év időtartama főszabályként…",
+    options: [
+        "Bármely 365 naptári napnak megfelelő időtartam.",
+        "Megegyezik a naptári évvel.",
+        "Megegyezik a tevékenység tényleges megkezdésének naptári napjától számított egy éves időtartammal.",
+        "Az év minden olyan napja, amely nem munkaszüneti nap."
+    ],
+    correctAnswer: "Megegyezik a naptári évvel."
+},
+{
+    question: "Mikor kell SZJA adóbevallást tennie a vállalkozói tevékenységét megszüntető egyéni vállalkozónak?",
+    options: [
+        "A következő év május 20-áig.",
+        "Az adóköteles tevékenység megszűnésének napjától számított 60 napon belül.",
+        "Az utolsó bevétel beérkezésétől számított 30 napon belül.",
+        "A vállalkozói tevékenység megszüntetésével egyidejűleg."
+    ],
+    correctAnswer: "A vállalkozói tevékenység megszüntetésével egyidejűleg."
+},
+{
+    question: "Meddig kell benyújtania az egyéni vállalkozónak a személyi jövedelemadó bevallását?",
+    options: [
+        "A tárgyévet követő év február 15-éig.",
+        "A tárgyévet követő év február 20-áig.",
+        "A tárgyévet követő év február 25-éig.",
+        "A tárgyévet követő év május 20-áig"
+    ],
+    correctAnswer: "A tárgyévet követő év május 20-áig"
+},
+{
+    question: "Melyik tőkeelem NEM tartozik a saját tőkéhez?",
+    options: [
+        "Az eredménytartalék.",
+        "A tulajdonosi kölcsön.",
+        "A tőketartalék.",
+        "A jegyzett tőke."
+    ],
+    correctAnswer: "A tulajdonosi kölcsön."
+},
+{
+    question: "Hová kell a szociális hozzájárulási adókötelezettséget bevallani?",
+    options: [
+        "A Nemzeti Adó- és Vámhivatalhoz.",
+        "Az Egészségbiztosítási Pénztárhoz.",
+        "A Nyugdíjbiztosítási Pénztárhoz.",
+        "A Társadalombiztosítási Igazgatósághoz."
+    ],
+    correctAnswer: "A Nemzeti Adó- és Vámhivatalhoz."
+},
+{
+    question: "A társas vállalkozás a kiegészítő tevékenységet folytató tag után milyen járulékot fizet?",
+    options: [
+        "Egészségügyi szolgáltatási járulékot.",
+        "Egészségügyi hozzájárulást.",
+        "Egészségbiztosítási járulékot.",
+        "Egészségügyi támogatást."
+    ],
+    correctAnswer: "Egészségügyi szolgáltatási járulékot."
+},
+{
+    question: "Vagyonnak minősül-e a bérleti jog?",
+    options: [
+        "Igen, minden esetben.",
+        "Csak a tartós bérlet.",
+        "Nem, mert nem tárgyiasult anyagi forrás.",
+        "Nem, mert a vállalkozásnak ilyen esetben nincs tulajdonosi joga."
+    ],
+    correctAnswer: "Igen, minden esetben."
+},
+{
+    question: "Keletkezik-e ÁFA fizetési kötelezettség előleg fizetése esetén?",
+    options: [
+        "Igen, az előleggel arányos összegig.",
+        "Csak abban az esetben, ha az előleg termékértékesítéshez kapcsolódik.",
+        "Csak akkor, ha a jövedelme eléri a havi minimálbér összegének a felét.",
+        "Nem."
+    ],
+    correctAnswer: "Igen, az előleggel arányos összegig."
+},
+{
+    question: "Tájékoztathatja-e az adóhatóság az adózót más adózó adatairól?",
+    options: [
+        "Igen, de csak ügyvéd jelenlétében.",
+        "Csak a nevéről, székhelyéről, telephelyéről, adószámáról, ha ezek az adózót terhelő adókötelezettség jogszerű teljesítéséhez szükségesek.",
+        "Csak a bankszámla számáról, ha végrehajtási cselekményre hivatkozik.",
+        "Nem, mert ez az adótitok körébe tartozik."
+    ],
+    correctAnswer: "Csak a nevéről, székhelyéről, telephelyéről, adószámáról, ha ezek az adózót terhelő adókötelezettség jogszerű teljesítéséhez szükségesek."
+},
+{
+    question: "A cégautó-adó havi mértéke…",
+    options: [
+        "Személygépkocsinként a személygépkocsi kilowattban kifejezett teljesítménye alapján határozható meg.",
+        "Kizárólag a cég tulajdonában álló járművek számától függ.",
+        "Személygépkocsinként a személygépkocsi kilowattban kifejezett teljesítménye és környezetvédelmi osztályjelzése alapján határozható meg.",
+        "Személygépkocsinként a környezetvédelmi osztály-jelzése alapján határozható meg."
+    ],
+    correctAnswer: "Személygépkocsinként a személygépkocsi kilowattban kifejezett teljesítménye és környezetvédelmi osztályjelzése alapján határozható meg."
+},
+{
+    question: "Mit takar az alábbi meghatározás? A vevő az ellenérték teljes összegét kifizeti az áru átvétele előtt.",
+    options: [
+        "Előlegfizetés.",
+        "Előrefizetés.",
+        "Lízing.",
+        "Kölcsön."
+    ],
+    correctAnswer: "Előrefizetés."
+},
+{
+    question: "Lízing fogalma:",
+    options: [
+        "Olyan üzleti megállapodás, mely szerint a lízingbe adó megvásárolja a lízingbe vevő által igényelt eszközt (lízingtárgyat), amit rendszeres díjfizetés ellenében a lízingbe vevőnek átenged.",
+        "Olyan üzleti megállapodás, mely szerint a lízingbe vevő megvásárolja a lízingbe adó által igényelt eszközt (lízingtárgyat), amit rendszeres díjfizetés ellenében a lízingbe vevőnek átenged.",
+        "Bérlet.",
+        "A Ptk. szerint egy speciális bérleti konstrukció, ahol lízingdíj fejében történik az eszköz megvásárlása."
+    ],
+    correctAnswer: "Olyan üzleti megállapodás, mely szerint a lízingbe adó megvásárolja a lízingbe vevő által igényelt eszközt (lízingtárgyat), amit rendszeres díjfizetés ellenében a lízingbe vevőnek átenged."
+},
+{
+    question: "Az alábbiak közül mitől függ a beszámoló formája?",
+    options: [
+        "Attól, hogy a vállalkozás milyen adó hatálya alá jelentkezett be.",
+        "A telephelyek számától.",
+        "Attól, hogy a vállalkozás melyik formát választotta.",
+        "A mérlegfőösszegtől, az éves nettó árbevétel nagyságától, valamint az átlagosan foglalkoztatottak számától."
+    ],
+    correctAnswer: "A mérlegfőösszegtől, az éves nettó árbevétel nagyságától, valamint az átlagosan foglalkoztatottak számától."
+},
+{
+    question: "Kik kötelesek bankszámlát nyitni?",
+    options: [
+        "A magánszemélyeken kívül minden más adózó.",
+        "A belföldi jogi személyek és az általános forgalmi adó fizetésére kötelezett magánszemélyek.",
+        "Kivétel nélkül minden adózó.",
+        "Mindenki, aki az ilyen kötelezettségét átutalással kívánja teljesíteni."
+    ],
+    correctAnswer: "A belföldi jogi személyek és az általános forgalmi adó fizetésére kötelezett magánszemélyek."
+},
+{
+    question: "Monopólium fogalma:",
+    options: [
+        "Az a piaci szituáció, amikor egyetlen eladó uralja a piacot, és ő határozza meg az árakat.",
+        "Vállalatok összeolvadása.",
+        "500 fő létszám felett foglalkoztató vállalat.",
+        "Egyedi állapot a piacon."
+    ],
+    correctAnswer: "Az a piaci szituáció, amikor egyetlen eladó uralja a piacot, és ő határozza meg az árakat."
+},
+{
+    question: "Milyen adatokat kell közölnie a magánszemélynek az adóhatósággal a lakóhely-változtatás után?",
+    options: [
+        "Az előző lakcímét és az előző jövedelmét.",
+        "Semmilyet, mert nem terheli adatközlési kötelezettség.",
+        "A változás bekövetkeztétől számított 15 napon belül az új lakcímet.",
+        "A változás bekövetkeztétől számított 8 napon belül az új lakcímet."
+    ],
+    correctAnswer: "Semmilyet, mert nem terheli adatközlési kötelezettség."
+},
+{
+    question: "Az alábbiak közül melyik nyereség típusú adó?",
+    options: [
+        "A gépjárműadó.",
+        "A fogyasztási adó.",
+        "A társasági adó.",
+        "Az illeték."
+    ],
+    correctAnswer: "A társasági adó."
+},
+{
+    question: "Milyen adómérték (ÁFA) tüntethető fel az egyszerűsített számlában?",
+    options: [
+        "21,26 %, 4,76% és 15,25%.",
+        "20% illetve 12%.",
+        "Az egyszerűsített számlában egyáltalán nem tüntethető fel % érték.",
+        "Az egyszerűsített számlában kizárólag a „mentes az adó alól” szöveg tüntethető fel."
+    ],
+    correctAnswer:  "21,26 %, 4,76% és 15,25%."
+},
+{
+    question: "Mi az adó elévülési ideje?",
+    options: [
+        "Fő szabályként az adott évet követő 5. év december 31-e.",
+        "Fő szabályként az adóbevallás évét követő 5. év december 31-e.",
+        "Fő szabályként az adóbevallás évét követő 10. év december 31-e.",
+        "Fő szabályként az adóbevallás évét követő 5. év február 15-e."
+    ],
+    correctAnswer: "Fő szabályként az adóbevallás évét követő 5. év december 31-e."
+},
+{
+    question: "A cégautó-adót melyik törvény szabályozza?",
+    options: [
+        "Gépjárműadóról szóló törvény.",
+        "Személyi jövedelemadóról szóló törvény.",
+        "Illetéktörvény.",
+        "Az ÁFA törvény."
+    ],
+    correctAnswer:  "Személyi jövedelemadóról szóló törvény."
+},
+{
+    question: "Milyen kockázattal jár az eladó számára az átutalással történő fizetés (nyitva szállítás)?",
+    options: [
+        "A pénz átutalása egy bankon keresztül történik, ezért nem egészen biztonságos.",
+        "Az eladó az árut és az okmányokat is átadja a vevőnek még az ellenérték kifizetése előtt, ezért birtokon kívül kerül, a pénz átutalása csak a vevőn múlik.",
+        "A vevő köteles az ellenértéket letétbe helyezni. Az átutalás ennek a feloldásával jár, így az eladónak csökken a kockázata.",
+        "Az eladó addig nem adja át az árut, míg az ellenértéket meg nem kapja, ezért nincs kockázata."
+    ],
+    correctAnswer: "Az eladó az árut és az okmányokat is átadja a vevőnek még az ellenérték kifizetése előtt, ezért birtokon kívül kerül, a pénz átutalása csak a vevőn múlik."
+},
+{
+    question: "Piac fogalma:",
+    options: [
+        "A tényleges és potenciális vevők és eladók összessége, és a közöttük lévő üzleti kapcsolat.",
+        "Minden áruház.",
+        "Az áru értéke.",
+        "Az áru eladási helye."
+    ],
+    correctAnswer: "A tényleges és potenciális vevők és eladók összessége, és a közöttük lévő üzleti kapcsolat."
+},
+{
+    question: "Mennyi a 27%-os áfa kulcs alkalmazásakor a bruttó ár ÁFA tartama?",
+    options: [
+        "10,71%.",
+        "21,26%.",
+        "18,71%.",
+        "16,67%."
+    ],
+    correctAnswer: "21,26%."
+},
+{
+    question: "Hogyan számolhatók el a tárgyi eszközök és immateriális javak költségként?",
+    options: [
+        "A tárgyi eszközök és az immateriális javak bekerülési értéke a beszerzéskor kapott számla alapján számolható el.",
+        "A tárgyi eszközök és az immateriális javak bekerülési értéke értékcsökkenés útján számolható el.",
+        "A tárgyi eszközök és az immateriális javak bekerülési értéke egy összegben elszámolható.",
+        "A tárgyi eszközök bekerülési értéke egy összegben, az immateriális javak bekerülési értéke értékcsökkenés útján számolható el."
+    ],
+    correctAnswer: "A tárgyi eszközök és az immateriális javak bekerülési értéke értékcsökkenés útján számolható el."
+},
+{
+    question: "Reklám fogalma:",
+    options: [
+        "Egy bizonyos termék vagy szolgáltatás eladása, a fogyasztásra ösztönzés.",
+        "Árpolitika.",
+        "Árubemutató.",
+        "Pénzkiadó tevékenység, a termék megvétele okán."
+    ],
+    correctAnswer: "Egy bizonyos termék vagy szolgáltatás eladása, a fogyasztásra ösztönzés."
+},
+{
+    question: "Milyen alapnyilvántartást kell vezetnie az egyéni vállalkozónak?",
+    options: [
+        "Pénztárkönyvet.",
+        "Útnyilvántartást.",
+        "Selejtezési nyilvántartást.",
+        "Költségnyilvántartást."
+    ],
+    correctAnswer: "Költségnyilvántartást."
+},
+{
+    question: "Mi a csekk?",
+    options: [
+        "Bankszámlapénzt helyettesítő fizetési eszköz.",
+        "Készpénzzel megegyező törvényes fizetőeszköz.",
+        "Igazolás fedezetről.",
+        "Pénzhelyettesítő értékpapír."
+    ],
+    correctAnswer: "Pénzhelyettesítő értékpapír."
+},
+{
+    question: "A munkaadót a munkavállalónak kifizetett bér után milyen fizetési kötelezettség terheli?",
+    options: [
+        "Kizárólag társadalombiztosítási járulék.",
+        "Kizárólag szociális hozzájárulási adó.",
+        "Szociális hozzájárulási adó és szakképzési hozzájárulás.",
+        "Kizárólag szakképzési hozzájárulás."
+    ],
+    correctAnswer: "Szociális hozzájárulási adó és szakképzési hozzájárulás."
+},
+{
+    question: "Az alábbiakban ismertetett járművek közül melyik után kell gépjárműadót fizetni?",
+    options: [
+        "A kizárólag elektromos hajtómotorral ellátott gépkocsi után.",
+        "Magyar hatósági rendszámtáblával ellátott gépjármű, pótkocsi, valamint Magyarország területén közlekedő külföldön nyilvántartott tehergépjármű után.",
+        "A költségvetési szerv tulajdonában lévő gépjármű után.",
+        "A helyi és a helyközi tömegközlekedést lebonyolító gépjármű után."
+    ],
+    correctAnswer: "Magyar hatósági rendszámtáblával ellátott gépjármű, pótkocsi, valamint Magyarország területén közlekedő külföldön nyilvántartott tehergépjármű után."
+},
+{
+    question: "A hatályos társadalombiztosítási szabályok alapján mikor kezdődik az egyéni vállalkozó járulékfizetési kötelezettsége?",
+    options: [
+        "A nyilvántartásba vétel napjától.",
+        "Az egészségbiztosítási pénztárhoz történő bejelentkezés napján.",
+        "A tevékenység tényleges megkezdése napjától.",
+        "Az egyéni vállalkozó nyilvántartásba történő bejegyzés napjától."
+    ],
+    correctAnswer: "A nyilvántartásba vétel napjától."
+},
+{
+    question: "Mennyi az ÁFA értéke?",
+    options: [
+        "Az adó alapjának 25%-a, 5%-a vagy a 0%-a.",
+        "Az adó alapjának 25%-a, 18%-a vagy a 0%-a.",
+        "Az adó alapjának 25%-a vagy 15%-a.",
+        "Az adó alapjának 27%-a, 18%-a, 5%-a."
+    ],
+    correctAnswer: "Az adó alapjának 27%-a, 18%-a, 5%-a."
+},
+{
+    question: "A gépjármű-adókötelezettség a gépjármű…",
+    options: [
+        "Forgalomba helyezésének napján kezdődik.",
+        "Forgalomba helyezésének évét követő év első napjával kezdődik.",
+        "Forgalomba helyezését követő hónap 1. napján kezdődik.",
+        "Forgalomba helyezésével érintett hónap első napján kezdődik."
+    ],
+    correctAnswer: "Forgalomba helyezésének évét követő év első napjával kezdődik."
+},
+{
+    question: "Vezethet-e korlátolt felelősségű társaság egyszeres könyvvitelt?",
+    options: [
+        "Igen, függetlenül az árbevételtől.",
+        "Csak akkor, ha az éves nettó árbevétele az 50 millió forintot nem éri el.",
+        "Csak akkor, ha az adóhatósági bejelentkezéskor ezt jelölte meg.",
+        "Nem."
+    ],
+    correctAnswer: "Csak akkor, ha az éves nettó árbevétele az 50 millió forintot nem éri el."
+},
+{
+    question: "Az alábbiak közül melyik készpénz-helyettesítő fizetési eszköz?",
+    options: [
+        "Az okmányos meghitelezés.",
+        "A váltó.",
+        "Az akkreditív.",
+        "Az inkasszó."
+    ],
+    correctAnswer: "A váltó."
+},
+{
+    question: "Az értékesítés nettó árbevételének fogalma:",
+    options: [
+        "Az üzleti évben értékesített vásárolt és saját termelésű készletek, valamint a teljesített szolgáltatások ártámogatással és felárral növelt, engedményekkel csökkentett- általános forgalmi adót nem tartalmazó- ellenértéke.",
+        "A teljesített szolgáltatások díja.",
+        "A termék ára.",
+        "Az üzleti évben értékesített vásárolt és saját termelésű készletek, valamint a teljesített szolgáltatások ártámogatással és felárral növelt, engedményekkel csökkentett- általános forgalmi adót tartalmazó- ellenértéke."
+    ],
+    correctAnswer: "Az üzleti évben értékesített vásárolt és saját termelésű készletek, valamint a teljesített szolgáltatások ártámogatással és felárral növelt, engedményekkel csökkentett- általános forgalmi adót nem tartalmazó- ellenértéke."
+},
+{
+    question: "Milyen alapnyilvántartást kell vezetnie az egyéni vállalkozónak?",
+    options: [
+        "Pénztárkönyvet.",
+        "Útnyilvántartást.",
+        "Selejtezési nyilvántartást.",
+        "Költségnyilvántartást."
+    ],
+    correctAnswer: "Költségnyilvántartást."
+},
+{
+    question: "Az alábbiak közül melyik a fizetési eszköz?",
+    options: [
+        "Az okmányos meghitelezés.",
+        "A váltó.",
+        "A csekk.",
+        "A hitelkártya."
+    ],
+    correctAnswer: "A csekk."
+},
+{
+    question: "Meddig kell bevallani és befizetni az ÁFÁ-t?",
+    options: [
+        "A tárgyhót vagy tárgynegyedévet követő hó 20. napjáig, éves bevallás esetén a tárgyévet követő február 25-ig.",
+        "A fizetési kötelezettség keletkezésétől számított 20 napon belül.",
+        "A tárgyhót, a tárgynegyedévet, vagy a tárgyévet követő hó 10-éig.",
+        "A 60 napos halasztás lejártát követően azonnal."
+    ],
+    correctAnswer: "A tárgyhót vagy tárgynegyedévet követő hó 20. napjáig, éves bevallás esetén a tárgyévet követő február 25-ig."
+},
+{
+    question: "Az adó megfizetésének időpontja átutalás esetén az a nap….",
+    options: [
+        "Amikor a pénzintézet az adózó átutalási megbízását átvette.",
+        "Amikor az összeget az adóhatóság az adózó folyószámláján jóváírja.",
+        "Amikor az adózó bankszámláját az azt vezető pénzintézet megterhelte.",
+        "Amikor az adózó a számláját vezető pénzintézetnek az átutalási megbízást megadta."
+    ],
+    correctAnswer: "Amikor az adózó bankszámláját az azt vezető pénzintézet megterhelte."
+},
+{
+    question: "Értékcsökkenési leírás fogalma:",
+    options: [
+        "Az értékcsökkenés költségként történő elszámolása.",
+        "Selejtezés.",
+        "Új beruházás.",
+        "A termék árának visszavétele."
+    ],
+    correctAnswer: "Az értékcsökkenés költségként történő elszámolása."
+},
+{
+    question: "Mi a fizetési csekk lényege?",
+    options: [
+        "Bankszámla egyenleget bemutató értékpapír.",
+        "Teljesítményt közvetlenül igazoló értékpapír.",
+        "Bankban beváltható, készpénzt helyettesítő fizetési eszköz.",
+        "Bankkártya forgalmat bemutató értékpapír."
+    ],
+    correctAnswer: "Bankban beváltható, készpénzt helyettesítő fizetési eszköz."
+},
+{
+    question: "Mi a számviteli rendszer célja?",
+    options: [
+        "Az, hogy információt szolgáltasson a vállalkozás valós pénzügyi, vagyoni és jövedelmi helyzetéről.",
+        "Az, hogy az adózás módját és mértékét az adóalany és az adóhatóság meghatározhassa.",
+        "Az, hogy könyvelés helyessége ellenőrizhető legyen.",
+        "Az, hogy a vállalkozás ez alapján hitelhez juthasson."
+    ],
+    correctAnswer: "Az, hogy információt szolgáltasson a vállalkozás valós pénzügyi, vagyoni és jövedelmi helyzetéről."
+},
+{
+    question: "Melyik fogalom nem tartozik az adó közgazdasági meghatározásához?",
+    options: [
+        "Közvetlen ellenszolgáltatás nélkül.",
+        "Járulék jellegű.",
+        "Kötelező.",
+        "Törvény írja elő."
+    ],
+    correctAnswer: "Járulék jellegű."
+},
+{
+    question: "Mi képezi a főállású egyéni vállalkozó szociális hozzájárulási adójának alapját, ha a főtevékenysége középfokú szakképzettséget nem igényel?",
+    options: [
+        "A vállalkozásból származó előző évi összes jövedelem 1/12-ed része, de legalább a tárgyévet megelőző év utolsó napján érvényes minimálbér 60%-a.",
+        "A vállalkozói kivét, vagy az átalányadó alapját képező jövedelem, de havonta legalább az érvényes minimálbér 112,5%-a.",
+        "A vállalkozó által választott összeg, amely nem lehet kevesebb, mint a tárgyév első napján érvényes minimálbér 60%-a.",
+        "A vállalkozásból elért nyereség, de legalább a tárgyhónapot megelőző hónap első napján érvényes minimálbér összege."
+    ],
+    correctAnswer: "A vállalkozói kivét, vagy az átalányadó alapját képező jövedelem, de havonta legalább az érvényes minimálbér 112,5%-a."
+},
+{
+    question: "ÁFA visszaigénylés feltétele:",
+    options: [
+        "Általában visszaigényelhető, ha a beszerzett termék vagy szolgáltatás tovább értékesítésre kerül, vagy olyan tevékenységhez használják fel.",
+        "Általában visszaigényelhető, ha a beszerzett termék vagy szolgáltatás felhasználásra kerül.",
+        "Nem igényelhető vissza, ha a beszerzett termék vagy szolgáltatás tovább értékesítésre kerül, vagy olyan tevékenységhez használják fel.",
+        "Általában visszaigényelhető, ha a beszerzett termék vagy szolgáltatás felhasználásra nem kerül."
+    ],
+    correctAnswer: "Általában visszaigényelhető, ha a beszerzett termék vagy szolgáltatás tovább értékesítésre kerül, vagy olyan tevékenységhez használják fel."
+}
+            
+            
+
+
+            
+            
+            
+           
+            
+            
+
+           
+
+
+
+
+
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let errorCount = 0;
+        let answeredQuestions = 0;
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionText = document.getElementById("question");
+            const optionsContainer = document.getElementById("answers");
+
+            questionText.textContent = question.question;
+
+            optionsContainer.innerHTML = "";
+            question.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => {
+                    if (!button.classList.contains("answered")) {
+                        button.classList.add("answered");
+                        checkAnswer(option);
+                    }
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestionIndex];
+            const optionsContainer = document.getElementById("answers");
+
+            const buttons = optionsContainer.getElementsByTagName("button");
+            for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (button.textContent === question.correctAnswer) {
+                    button.classList.add("correct");
+                } else if (button.textContent === selectedOption && selectedOption !== question.correctAnswer) {
+                    button.classList.add("incorrect");
+                }
+                button.disabled = true;  // Disable all buttons after selection
+            }
+
+            if (selectedOption === question.correctAnswer) {
+                score++;
+            } else {
+                errorCount++;
+                document.getElementById("error-count").textContent = `Hibák: ${errorCount} / 5`;
+            }
+
+            answeredQuestions++;
+            document.getElementById("answered").textContent = `Kérdések válaszolva: ${answeredQuestions} / ${questions.length}`;
+
+            if (answeredQuestions < questions.length) {
+                document.getElementById("next-button").style.display = "block";
+            } else {
+                showResults();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+                document.getElementById("next-button").style.display = "none";
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById("quiz-container");
+            let resultText;
+
+            if (errorCount <= 5) {
+                resultText = `<h2 id="success-message">Gratulálok, sikeresen teljesítetted a vizsgát!</h2><div id="celebration">🎉🎆 Tűzijáték! 🎆🎉</div>`;
+            } else {
+                resultText = `<h2 id="failure-message">Sajnos nem sikerült a vizsga! Több mint 5 hibás válasz.</h2>`;
+            }
+
+            quizContainer.innerHTML = resultText;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>

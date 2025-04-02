@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SZAKMA KVÍZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003d7a;
+            transform: scale(0.98);
+        }
+
+        #error-count {
+            font-size: 16px;
+            color: red;
+        }
+
+        #answered {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #success-message {
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #failure-message {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #celebration {
+            display: none;
+            text-align: center;
+            font-size: 30px;
+            color: #ff0;
+        }
+
+        .fireworks {
+            animation: fireworks 1s infinite;
+        }
+
+        @keyframes fireworks {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>SZAKMA KVÍZ</h1>
+        <div id="quiz">
+            <p id="question">Betöltés...</p>
+            <div id="answered">Kérdések válaszolva: 0 / 82</div>
+            <div id="answers"></div>
+            <div id="error-count">Hibák: 0 / 5</div>
+            <button id="next-button" style="display: none;" onclick="nextQuestion()">Tovább</button>
+        </div>
+        <div id="celebration" class="fireworks">
+            🎉🎆 Tűzijáték! Gratulálok a sikeres vizsgához! 🎆🎉
+        </div>
+        <div id="success-message"></div>
+        <div id="failure-message"></div>
+    </div>
+    <script>
+        const questions = [
+            {
+    question: "Melyik jogszabály tartalmazza a szerződéskötések szabályait?",
+    options: [
+        "A közúti közlekedésről szóló törvény.",
+        "A büntető törvénykönyv.",
+        "A polgári törvénykönyv.",
+        "A büntető törvénykönyvek."
+    ],
+    correctAnswer: "A polgári törvénykönyv."
+},
+{
+    question: "Felszólíthatja-e a randalírozó, rendbontó utast a személy taxi vezetője a jármű elhagyására?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Ki zárhatja ki az ittas utast a személyszállításból?",
+    options: [
+        "A személytaxi vezetője, de csak az utas ittasságát igazolni tudó tanú jelenlétében.",
+        "A vállalkozás, vagy képviseletében a személytaxi vezetője.",
+        "A fuvar megrendelését kezelő diszpécser.",
+        "Csak a személytaxi vezetője."
+    ],
+    correctAnswer: "A vállalkozás, vagy képviseletében a személytaxi vezetője."
+},
+{
+    question: "Melyik jellemző a taxi viteldíj árképzésére?",
+    options: [
+        "Percdíj.",
+        "Alap-, perc- és kilométerdíj.",
+        "Kilométerdíj.",
+        "Kilométerdíj és percdíj."
+    ],
+    correctAnswer: "Alap-, perc- és kilométerdíj."
+},
+{
+    question: "Milyen környezetvédelmi besorolással rendelkező jármű használható taxiként?",
+    options: [
+        "EURO3 és EURO6 közötti.",
+        "EURO4 és EURO7 közötti.",
+        "8 évnél idősebb és EURO3 és EURO6 közötti.",
+        "9 évnél idősebb és EURO4 és EURO6 közötti."
+    ],
+    correctAnswer: "9 évnél idősebb és EURO4 és EURO6 közötti."
+},
+{
+    question: "Szabad-e a személyszállításra szolgáló jármű tetőcsomagtartóján poggyászt szállítani?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha a poggyász nem fér el a csomagtérben.",
+        "Nem.",
+        "Csak akkor, ha a poggyász nem fér be az utastérbe."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "A Taxaméternapló elvesztése, vagy megsemmisülése esetén mit szükséges tenni?",
+    options: [
+        "Semmit.",
+        "A NAV-ot kell értesíteni 15 napon belül.",
+        "Új naplót kell kiállítani.",
+        "Az illetékes szervizt kell értesíteni haladéktanul."
+    ],
+    correctAnswer:  "Az illetékes szervizt kell értesíteni haladéktanul."
+},
+{
+    question: "Felvehet-e utast a személytaxis vállalkozás a működési területén kívül?",
+    options: [
+        "Igen, de csak 50 km-es távolságon belül.",
+        "Igen, de csak írásbeli előrendelés esetén és a személytaxi működési területén levő úti céllal.",
+        "Nem.",
+        "Igen, de csak írásbeli előrendelés esetén."
+    ],
+    correctAnswer: "Igen, de csak írásbeli előrendelés esetén és a személytaxi működési területén levő úti céllal."
+},
+{
+    question: "A taxamétert a gépkocsiba beszerelő személynek milyen szakmai képesítésének kell lennie?",
+    options: [
+        "A NAV által indított tanfolyamot kell elvégeznie, amelyen műszerész képesítést szerez.",
+        "Bármelyik autóvillamossági műszerész.",
+        "Nincs rá szabály, alapvető szakértelemmel kell rendelkeznie.",
+        "Műszerész szakképesítésének és NAV által kiállított érvényes műszerész igazolvánnyal rendelkező személynek."
+    ],
+    correctAnswer: "Műszerész szakképesítésének és NAV által kiállított érvényes műszerész igazolvánnyal rendelkező személynek."
+},
+ {
+    question: "Lehet-e 2018-tól 8 éves személygépkocsival személytaxis szolgáltatást végezni?",
+    options: [
+        "Igen, de a jármű környezetvédelmi osztályba sorolása legalább Euro V. szintnek megfelelő kell, hogy legyen.",
+        "Nem.",
+        "Igen, de a jármű környezetvédelmi osztályba sorolása legalább Euro IV. szintnek megfelelő kell, hogy legyen.",
+        "Igen, de a jármű környezetvédelmi osztályba sorolása legalább Euro VI. szintnek megfelelő kell, hogy legyen."
+    ],
+    correctAnswer: "Igen, de a jármű környezetvédelmi osztályba sorolása legalább Euro IV. szintnek megfelelő kell, hogy legyen."
+},
+{
+    question: "Milyen környezetvédelmi besorolásnak kell megfelelnie egy személytaxi gépjárműnek?",
+    options: [
+        "EURO 3 (Budapest EURO 5)",
+        "EURO 4 és EURO 5",
+        "EURO 5 és EURO 6",
+        "EURO 6"
+    ],
+    correctAnswer:   "EURO 3 (Budapest EURO 5)"
+},
+{
+    question: "Ha a személytaxit a telephely helységének közigazgatási határától számított 30 km-t meghaladó távolságra rendelik meg…",
+    options: [
+        "A vállalkozás nem köteles elvállalni az utas szállítását.",
+        "A vállalkozás köteles elvállalni az utas szállítását.",
+        "A vállalkozás nem vállalhatja el az utas szállítását.",
+        "A vállalkozás nem vállalhat utas szállítást."
+    ],
+    correctAnswer:  "A vállalkozás nem köteles elvállalni az utas szállítását."
+},
+{
+    question: "Ki adja ki a vállalkozás szakmai irányítójának a sikeres képesítést igazoló vizsgaigazolást?",
+    options: [
+        "A vizsga helye szerinti illetékes megyei vagy fővárosi kormányhivatal.",
+        "A vizsga helye szerinti illetékes okmányiroda.",
+        "Az Innovációs és Fejlesztési Minisztérium.",
+        "A Közlekedési Hatóság."
+    ],
+    correctAnswer: "Az Innovációs és Fejlesztési Minisztérium."
+},
+{
+    question: "Egy gépjárműnek hány db taxaméternaplója lehet?",
+    options: [
+        "Akármennyi darab.",
+        "Amennyiben a NAV hitelesítette bármennyi.",
+        "Egy darab lehet.",
+        "Kettő darab lehet."
+    ],
+    correctAnswer: "Akármennyi darab."
+},
+{
+    question: "Köteles-e a személytaxi vezetője számlatömböt tartani fuvarozás közben a gépkocsiban?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha egyéni vállalkozóként végzi a tevékenységet.",
+        "Nem.",
+        "Nem, mert a taxaméter ad számlát is."
+    ],
+    correctAnswer:  "Igen."
+},
+{
+    question: "Tartalmaz-e a személytaxis személyszállító vezetői igazolvány területi hatályra vonatkozó érvényességet?",
+    options: [
+        "Igen.",
+        "Nem, kivéve, ha az ügyfél ezt kérelmében kifejezetten kéri.",
+        "Nem.",
+        "Pest Megyére vonatkozóan igen, más megyékben nem."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Felvehet-e utast a személytaxis vállalkozás a működési területén kívül leintéssel?",
+    options: [
+        "Igen, de csak 50 km-es távolságon belül.",
+        "Igen, de csak írásbeli előrendelés esetén és a személytaxi működési területén levő úti céllal.",
+        "Nem.",
+        "Igen, de csak írásbeli előrendelés esetén."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "Mi határozza meg a vagyoni biztosíték mértékét?",
+    options: [
+        "A vállalkozás tevékenységi engedélyében szereplő személygépkocsik száma.",
+        "A vállalkozás tevékenységi engedélyében szereplő személygépkocsikkal szállítható utasok száma.",
+        "A vállalkozás cégformája.",
+        "10 db járműig a vállalkozás tevékenységi engedélyében szereplő személygépkocsikkal szállítható utasok száma, azt követően egy összeg 3.000.000 Ft-ot kell letétbe tenni, illetve tartani."
+    ],
+    correctAnswer: "A vállalkozás tevékenységi engedélyében szereplő személygépkocsikkal szállítható utasok száma."
+},
+{
+    question: "Milyen árformák léteznek?",
+    options: [
+        "Hatósági és érdekvédelmi szervezetek által meghatározott árformák.",
+        "Hatósági és szabadáras árformák.",
+        "Forintalapú és valutaalapú árformák.",
+        "Szabadáras árformák."
+    ],
+    correctAnswer: "Hatósági és szabadáras árformák."
+},
+{
+    question: "Meddig köteles az üzemeltető megőrizni a taxaméternaplót?",
+    options: [
+        "5 évig.",
+        "A használat kezdetétől számított 8 évig.",
+        "A lezárástól számított 8 évig.",
+        "A lezárástól számított 6 évig."
+    ],
+    correctAnswer: "A lezárástól számított 8 évig."
+},
+{
+    question: "Megrendelheti-e az utas a személygépkocsis személyszállító szolgáltatást egy idegenforgalmi szervezeten keresztül?",
+    options: [
+        "Igen.",
+        "Csak 2018. január 1-jétől.",
+        "Nem.",
+        "Általában nem, mert azt utazási irodán keresztül lehet csak megrendelni."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Hogyan teljesíthető a vagyoni biztosíték meglétének igazolása?",
+    options: [
+        "Elkülönített számlán kezelt vagyoni biztosítékkal, vagy biztosító által nyújtott felelősségbiztosítással.",
+        "Csak biztosító által nyújtott felelősségbiztosítással.",
+        "Csak elkülönített bankszámla banki igazolásával.",
+        "Kizárólag készpénz befizetéssel a Közlekedési Hatóságnál Vezetett számlára."
+    ],
+    correctAnswer: "Elkülönített számlán kezelt vagyoni biztosítékkal, vagy biztosító által nyújtott felelősségbiztosítással."
+},
+{
+    question: "A számla kiállítását követően mi a teendő a taxaméter által kinyomtatott nyugtával?",
+    options: [
+        "A számlatömb tőpéldányához kell tűzni.",
+        "Oda kell adni az utasnak.",
+        "Ha az utas nem kéri el, a nyugta kidobható.",
+        "Ki kell dobni."
+    ],
+    correctAnswer: "A számlatömb tőpéldányához kell tűzni."
+},
+{
+    question: "Ki szerelheti be a taxamétert a gépkocsiba?",
+    options: [
+        "A NAV által kiállított érvényes műszerész igazolvánnyal rendelkező személy.",
+        "Bármelyik autóvillamossági műszerész.",
+        "Nincs rá szabály, alapvető szakértelemmel akár házilag is beszerelhető.",
+        "Műszerész szakképesítéssel és igazolvánnyal rendelkező személy."
+    ],
+    correctAnswer:  "A NAV által kiállított érvényes műszerész igazolvánnyal rendelkező személy."
+},
+{
+    question: "A személytaxi vezetője utasaival lakott területen kívül közlekedik. Köteles-e bekapcsolni a biztonsági övét?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben az utas az első utas-ülésen ül.",
+        "Nem.",
+        "Nem, ha az utas ehhez hozzájárul."
+    ],
+    correctAnswer:  "Nem."
+},
+{
+    question: "Milyen rendszámtáblával ellátott személygépkocsival végezhető személytaxi-szolgáltatás?",
+    options: [
+        "Sárga vagy fehér alapszínű rendszámtáblával.",
+        "Sárga alapszínű rendszámtáblával.",
+        "Fehér alapszínű, sorozatban előállított, állandó rendszámtáblával.",
+        "Sárga vagy zöld (elektromos hajtású jármű esetén) alapszínű rendszámtáblával."
+    ],
+    correctAnswer: "Sárga vagy zöld (elektromos hajtású jármű esetén) alapszínű rendszámtáblával."
+},
+{
+    question: "Szigorú számadású okmány a taxaméternapló?",
+    options: [
+        "Igen.",
+        "Nem.",
+        "Általában nem, de vannak esetek, amikor igen.",
+        "Általában igen, de vannak esetek, amikor nem."
+    ],
+    correctAnswer: "Igen."
+},
+ {
+    question: "Az alábbiak közül melyik feltétel teljesülése szükséges a személytaxi vezetéséhez?",
+    options: [
+        "„B” és „D1” kategóriákra is érvényes vezetői engedély.",
+        "Büntetlen előélet.",
+        "Betöltött 21. életév.",
+        "„B” és „C” kategóriákra is érvényes vezetői engedély."
+    ],
+    correctAnswer: "Betöltött 21. életév."
+},
+{
+    question: "Ha a személytaxis szolgáltatáshoz használt járművet a vezetője saját célra veszi igénybe használnia kell-e a biztonsági övet?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha rajta kívül más is utazik az autóban.",
+        "Nem.",
+        "Igen, ha kiskorú gyermeket szállít."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Feltétele-e a személyszállítói szolgáltatás végzésének az érettségi?",
+    options: [
+        "Igen, 2018. január 1-jétől.",
+        "Igen.",
+        "Nem.",
+        "21 éves kor felett igen."
+    ],
+    correctAnswer:  "Nem."
+},
+{
+    question: "Hogyan szerezhető személytaxis és személygépkocsis személyszállító vállalkozói képesítés?",
+    options: [
+        "Tanfolyamon való részvétellel és vizsgakötelezettség teljesítésével.",
+        "Tanfolyamon való aktív részvétellel.",
+        "Egy képesítő vizsga teljesítésével, melyre tanfolyam elvégzése nélkül lehet jelentkezni.",
+        "Tanfolyamon való részvétellel és sikeres vizsgakötelezettség teljesítésével."
+    ],
+    correctAnswer: "Tanfolyamon való részvétellel és vizsgakötelezettség teljesítésével."
+},
+{
+    question: "Személy taxi vezetője gyermekét viszi iskolába. Használhatja-e közlekedésre a buszsávot?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben késésben van.",
+        "Nem.",
+        "Nem, ha tudna más sávban is haladni."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "Melyik jogszabály tartalmazza a szerződéskötések szabályait a taxi szolgáltatás területén?",
+    options: [
+        "A közút közlekedésről szóló törvény.",
+        "A büntető törvénykönyv.",
+        "A polgári törvénykönyv, kiegészítve a személygépkocsival díj ellenében végzett közúti személyszállításról szóló 176/2015. (VII.7.) Kormányrendelet egyedi szabályaival.",
+        "A polgári törvénykönyv."
+    ],
+    correctAnswer: "A polgári törvénykönyv, kiegészítve a személygépkocsival díj ellenében végzett közúti személyszállításról szóló 176/2015. (VII.7.) Kormányrendelet egyedi szabályaival."
+},
+{
+    question: "Melyik jogszabály tartalmazza a szerződéskötések szabályait a személygépkocsis személyszállító szolgáltatás területén?",
+    options: [
+        "A közút közlekedésről szóló törvény.",
+        "A büntető törvénykönyv.",
+        "A polgári törvénykönyv, kiegészítve a személygépkocsival díj ellenében végzett közúti személyszállításról szóló 176/2015. (VII.7.) Kormányrendelet egyedi szabályaival.",
+        "A polgári törvénykönyv."
+    ],
+    correctAnswer: "A polgári törvénykönyv, kiegészítve a személygépkocsival díj ellenében végzett közúti személyszállításról szóló 176/2015. (VII.7.) Kormányrendelet egyedi szabályaival."
+},
+{
+    question: "Milyen adatokat tartalmaz a személytaxis személyszállító vezetői igazolvány?",
+    options: [
+        "Az igazolvány sorszámát, a személytaxi-vezető személyazonosító adatait, a vizsgaigazolás számát és kiállításának dátumát, a személytaxi-vezető arcképmását és az igazolvány területi hatályát.",
+        "Az igazolvány sorszámát, a személytaxi-vezető személyazonosító adatait, a vizsgaigazolás számát és kiállításának dátumát és a személytaxi-vezető arcképmását.",
+        "Az igazolvány sorszámát, a személytaxi-vezető személyazonosító adatait és a vállalkozás nevét, adószámát illetve székhelyének címét.",
+        "Az igazolvány sorszámát, a személytaxi-vezető személyazonosító adatait, a vizsgaigazolás számát és kiállításának dátumát, az igazolvány területi hatályát."
+    ],
+    correctAnswer: "Az igazolvány sorszámát, a személytaxi-vezető személyazonosító adatait, a vizsgaigazolás számát és kiállításának dátumát, a személytaxi-vezető arcképmását és az igazolvány területi hatályát."
+},
+{
+    question: "A személygépkocsis személyszállító gépkocsivezető utasaival lakott területen kívül közlekedik. Köteles-e bekapcsolni a biztonsági övét?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben az utas az első utas-ülésen ül.",
+        "Nem.",
+        "Nem, ha az utas ehhez hozzájárul."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "A személygépkocsis személyszállító gépkocsivezető utasaival lakott területen belül közlekedik. Köteles-e bekapcsolni a biztonsági övét?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben az utas az első utas-ülésen ül.",
+        "Nem.",
+        "Nem, ha az utas ehhez hozzájárul."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "El lehet-e térni a szerződéskötés vonatkozó jogszabályaitól a taxi szolgáltatás területén?",
+    options: [
+        "Igen, bármely esetben.",
+        "Igen, de nem minden esetben.",
+        "Nem.",
+        "A polgári törvénykönyv köretein belül igen."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "Megrendelheti-e az utas a személygépkocsis személyszállító szolgáltatást egy utazási irodán keresztül?",
+    options: [
+        "Igen.",
+        "Csak 2018. január 1-jétől.",
+        "Nem.",
+        "Általában nem, mert azt csak idegenforgalmi szervezeten keresztül lehet megrendelni."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Az alábbiak közül melyik feltétel teljesülése szükséges a személytaxi vezetéséhez?",
+    options: [
+        "„B” és „D1” kategóriákra is érvényes vezetői engedély.",
+        "Büntetlen előélet.",
+        "Érvényes egészségügyi alkalmasság.",
+        "„B” és „C” kategóriákra is érvényes vezetői engedély."
+    ],
+    correctAnswer:  "Érvényes egészségügyi alkalmasság."
+},
+{
+    question: "Köteles-e elszállítani a személytaxi vezetője a kísérő nélkül utazó gyermeket?",
+    options: [
+        "Nem, ha az 6 évnél fiatalabb.",
+        "Csak akkor, ha ezzel a vállalkozás nagy bevételtől esne el.",
+        "Igen, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, ha 8 évnél fiatalabb."
+    ],
+    correctAnswer: "Nem, ha az 6 évnél fiatalabb."
+},
+{
+    question: "Szabad-e a személytaxi szolgáltatást végző jármű tetőcsomagtartóján poggyászt szállítani?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha a poggyász nem fér el a csomagtérben.",
+        "Nem.",
+        "Csak akkor, ha a poggyász nem fér be az utastérbe."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "A személytaxi vezetője utasaival lakott területen belül közlekedik. Köteles-e bekapcsolni a biztonsági övét?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben az utas az első utas-ülésen ül.",
+        "Nem.",
+        "Nem, ha az utas ehhez hozzájárul."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "Az alábbiak közül melyik feltétel teljesülése szükséges a személytaxi vezetéséhez?",
+    options: [
+        "„B” és „D1” kategóriákra is érvényes vezetői engedély.",
+        "Büntetlen előélet.",
+        "Legalább 2 éve érvényes „B” kategóriára érvényes vezetői engedély.",
+        "„B” és „C” kategóriákra is érvényes vezetői engedély."
+    ],
+    correctAnswer: "Legalább 2 éve érvényes „B” kategóriára érvényes vezetői engedély."
+},
+{
+    question: "Személygépkocsis személyszállító szolgáltatást végezhet egy autóbuszos közlekedést végző vállalkozás?",
+    options: [
+        "Igen.",
+        "Csak 2018. január 1-jétől.",
+        "Nem.",
+        "Általában nem, mert azt csak idegenforgalmi szervezet végezhet."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Személytaxi vezetője gyermekét viszi iskolába. Köteles-e bekapcsolni a biztonsági övét lakott területen belül?",
+    options: [
+        "Igen.",
+        "Igen, amennyiben 50 km/h–nál gyorsabban halad.",
+        "Nem.",
+        "Nem, ha gyermekülést használ a gyermeke szállításához."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Felszólíthatja-e a személygépkocsi beszennyeződését veszélyeztető ruházatot viselő utast a személytaxi vezetője a jármű elhagyására?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Felszólíthatja-e a közlekedés biztonságát veszélyeztető utast a személytaxi vezetője a jármű elhagyására?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Személytaxi vezetője üresen, utas nélkül közlekedik taxi üzemmódban. Használhatja-e közlekedésre a buszsávot?",
+    options: [
+        "Igen.",
+        "Igen, de csak akkor, ha utasért megy.",
+        "Nem.",
+        "Nem, ha tudna másik sávban is haladni."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Szabad-e személygépkocsis személyszállító szolgáltatást végző jármű utasterében poggyászt szállítani?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha a poggyász nem fér el a csomagtérben.",
+        "Nem.",
+        "Csak akkor, ha a poggyász nem fér el a tetőcsomagtartón."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Az alábbiak közül melyik feltétel teljesülése szükséges a személytaxi vezetéséhez?",
+    options: [
+        "„B” és „D1” kategóriákra is érvényes vezetői engedély.",
+        "Büntetlen előélet.",
+        "PÁV II. képesítés megléte.",
+        "„B” és „C” kategóriákra is érvényes vezetői engedély."
+    ],
+    correctAnswer:"PÁV II. képesítés megléte."
+},
+{
+    question: "Az alábbiak közül melyik feltétel teljesülése szükséges a személytaxi vezetéséhez?",
+    options: [
+        "„B” és „D1” kategóriákra is érvényes vezetői engedély.",
+        "Büntetlen előélet.",
+        "Érvényes személytaxi vezetői igazolvány.",
+        "„B” és „C” kategóriákra is érvényes vezetői engedély."
+    ],
+    correctAnswer: "Érvényes személytaxi vezetői igazolvány."
+},
+{
+    question: "Felvehet-e utast a személytaxis vállalkozás a működési területén kívül autóbusz pályaudvaron?",
+    options: [
+        "Igen, de csak 50 km-es távolságon belül.",
+        "Igen, de csak írásbeli előrendelés esetén és a személytaxi működési területén levő úti céllal.",
+        "Nem.",
+        "Igen, de csak írásbeli előrendelés esetén."
+    ],
+    correctAnswer:  "Igen, de csak írásbeli előrendelés esetén és a személytaxi működési területén levő úti céllal."
+},
+{
+    question: "Felszólíthatja-e az ittas utast a személytaxi vezetője a jármű elhagyására?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Felszólíthatja-e a fertőző beteg utast a személytaxi vezetője a jármű elhagyására?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "El lehet-e térni a szerződéskötés vonatkozó jogszabályaitól a személygépkocsis személyszállító szolgáltatás területén?",
+    options: [
+        "Igen, bármely esetben.",
+        "Igen, de nem minden esetben.",
+        "Nem.",
+        "A polgári törvénykönyv köretein belül igen."
+    ],
+    correctAnswer: "Igen, de nem minden esetben."
+},
+{
+    question: "Felszólíthatja-e azt az utast a személytaxi vezetője a jármű elhagyására, aki nem tudja, vagy nem akarja megmondani az úti célját?",
+    options: [
+        "Igen.",
+        "Csak akkor, ha ezzel a vállalkozás nem túl nagy bevételtől esik el.",
+        "Nem, mert ennek az utasnak is joga van igénybe venni a szolgáltatást.",
+        "Nem, csak rendőri intézkedést követően."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Melyik árforma érvényes a taxi szolgáltatás területén Pest megyében?",
+    options: [
+        "Szabadár",
+        "A szabadár és a hatósági ár",
+        "Hatósági ár",
+        "A rögzített ár"
+    ],
+    correctAnswer: "Hatósági ár"
+},
+{
+    question: "Személytaxi szolgáltatás esetén mely Hatóság adja ki a működéshez az engedélyt?",
+    options: [
+        "A vállalkozás székhelye szerinti közlekedési hatóság.",
+        "A vállalkozás telephelye szerinti közlekedési hatóság.",
+        "Nem kell engedély, ezért a hatóságtól nem kell azt kérni.",
+        "A lakóhely szerinti illetékes hatóság."
+    ],
+    correctAnswer: "A vállalkozás székhelye szerinti közlekedési hatóság." 
+},
+{
+    question: "A személyes poggyász fogalmába beletartozik az utas utazáskor magánál tartott számítógépe?",
+    options: [
+        "Igen.",
+        "Igen, de csak 400.000 Ft értékig.",
+        "Nem.",
+        "Igen, de csak 300.000 Ft értékig."
+    ],
+    correctAnswer:  "Nem."
+},
+{
+    question: "Mikor térhet el a megrendelő a vállalkozási szerződéstől?",
+    options: [
+        "A szerződés teljesítése előtt bármikor.",
+        "Soha.",
+        "Bármikor.",
+        "A szerződés teljesítése után bármikor."
+    ],
+    correctAnswer: "A szerződés teljesítése előtt bármikor."
+},
+{
+    question: "Melyik árforma érvényes a személygépkocsis személyszállító szolgáltatás területén, Magyarországon?",
+    options: [
+        "Szabadár",
+        "A szabadár és a hatósági ár",
+        "Hatósági ár",
+        "A rögzített ár"
+    ],
+    correctAnswer: "Szabadár"
+}, 
+{
+    question: "A személyes poggyász fogalmába beletartozik az utas utazáskor magánál tartott szemüvege?",
+    options: [
+        "Igen.",
+        "Igen, de csak 200.000 Ft értékig.",
+        "Nem.",
+        "Igen, de csak 100.000 Ft értékig."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Megtéríthető-e a kötelező biztosítás terhére minden esetben a személyi sérülés kára?",
+    options: [
+        "Igen.",
+        "Igen, de csak 200.000 Ft-ig.",
+        "Nem.",
+        "Nem, mert idegen hibás baleset esetén nem térül meg."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "A vállalkozási szerződés milyen kötelem típusú?",
+    options: [
+        "Eredménykötelem típusú.",
+        "Megbízás típusú.",
+        "Szolgáltatás típusú.",
+        "Vállalkozás típusú."
+    ],
+    correctAnswer: "Eredménykötelem típusú."
+},
+{
+    question: "Személytaxis szolgáltatást végző vállalkozás gépjárműve parkolása esetén köteles a parkoló zónában parkolási díjat fizetni?",
+    options: [
+        "Igen.",
+        "Igen, de csak 1 óra várakozás után.",
+        "Nem.",
+        "Nem, mert a taxis nem köteles parkolási díjat fizetni."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Személytaxi-szolgáltatás végzéséhez szükséges-e a Hatóságtól külön engedély?",
+    options: [
+        "Igen.",
+        "Nem.",
+        "Igen, de csak sárga taxi esetében.",
+        "Az elektromos autóra nem kell engedély."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Köteles-e a személytaxis szolgáltatást végző vállalkozás járműveit telephelyen tárolni?",
+    options: [
+        "Igen, minden esetben.",
+        "Igen, de csak 10 db jármű üzemeltetése felett.",
+        "Nem.",
+        "Igen, de csak 20 db jármű üzemeltetése felett."
+    ],
+    correctAnswer: "Igen, de csak 10 db jármű üzemeltetése felett."
+},
+{
+    question: "Személytaxi-szolgáltatási szerződés utas és szolgáltató között a Ptk. szerint hogyan kerül megkötésre, ha az utas leintéssel száll be a járműbe?",
+    options: [
+        "Ráutaló magatartással.",
+        "Írásban.",
+        "Szóban.",
+        "Nem jön létre ebben az esetben szerződés."
+    ],
+    correctAnswer: "Ráutaló magatartással."
+},
+{
+    question: "Köteles-e a személygépkocsis személyszállító szolgáltatást végző vállalkozás járműveit telephelyen tárolni?",
+    options: [
+        "Igen, minden esetben.",
+        "Igen, de csak 10 db jármű üzemeltetése felett.",
+        "Nem.",
+        "Igen, de csak 20 db jármű üzemeltetése felett."
+    ],
+    correctAnswer: "Igen, de csak 10 db jármű üzemeltetése felett."
+},
+{
+    question: "Személytaxi rendelkezésre bocsátása esetén az üzemeltetőt köti szerződéskötési kötelezettség?",
+    options: [
+        "Igen.",
+        "Nem.",
+        "Igen, ha hosszú távú a rendelkezésre bocsátás.",
+        "Nem, ha csak legfeljebb 2 napra kérte a járművet."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Diszpécserszolgálati tevékenység végzéséhez szükséges-e az illetékes hatóság külön engedélye?",
+    options: [
+        "Igen.",
+        "10 db gépjármű felett igen.",
+        "Nem.",
+        "Ha járművel is rendelkezik a diszpécser, akkor igen."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "Lehet-e érvényes kötelező biztosítás nélkül személytaxi szolgáltatást végezni?",
+    options: [
+        "Igen lehet.",
+        "Igen lehet, ha csak 45 nappal ezelőtt járt le a kötelező biztosítás.",
+        "Nem lehet.",
+        "Nem lehet, ha 15 napja járt le a kötelező biztosítás."
+    ],
+    correctAnswer: "Nem lehet."
+},
+{
+    question: "Érvényes-e a kötelező biztosítás a biztosítási szolgáltató által kiküldött ajánlat visszaigazolásával?",
+    options: [
+        "Igen.",
+        "Igen, de csak 30 nap múlva.",
+        "Nem.",
+        "Nem, csak a kötvény megérkezése után."
+    ],
+    correctAnswer:  "Igen."
+},
+{
+    question: "Önálló diszpécserszolgálati tevékenység végzéséhez szükséges-e az illetékes hatóság külön engedélye?",
+    options: [
+        "Igen.",
+        "10 db gépjármű felett igen.",
+        "Nem.",
+        "Ha járművel is rendelkezik a diszpécser, akkor igen."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Mely Ptk. szerinti szerződéstípus alá sorolhatóak a személytaxi-szolgáltatási szerződések?",
+    options: [
+        "Vállalkozási szerződés.",
+        "Megbízási szerződés.",
+        "Szolgáltatási szerződés.",
+        "Adás-vételi szerződés."
+    ],
+    correctAnswer:  "Vállalkozási szerződés."
+},
+{
+    question: "Személygépkocsis személyszállítási szolgáltatást végző vállalkozás, gépjárműve parkolása esetén köteles a parkoló zónában parkolási díjat fizetni?",
+    options: [
+        "Igen.",
+        "Igen, de csak 1 óra várakozás után.",
+        "Nem.",
+        "Nem, mert a személygépkocsis személyszállító nem köteles parkolási díjat fizetni."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Lehet-e érvényes kötelező biztosítás nélkül személygépkocsis személyszállító szolgáltatást végezni?",
+    options: [
+        "Igen lehet.",
+        "Igen lehet, ha csak 45 nappal ezelőtt járt le a kötelező biztosítás.",
+        "Nem lehet.",
+        "Nem lehet, ha 15 napja járt le a kötelező biztosítás."
+    ],
+    correctAnswer: "Nem lehet."
+},
+{
+    question: "A személyes poggyász fogalmába beletartozik az utas utazáskor használt bőröndje?",
+    options: [
+        "Igen.",
+        "Igen, de csak 200.000 Ft értékig.",
+        "Nem.",
+        "Igen, de csak 100.000 Ft értékig."
+    ],
+    correctAnswer: "Nem."
+},
+{
+    question: "A vállalkozási szerződés teljesítése megkezdődött, a megrendelő elállhat a szerződéstől?",
+    options: [
+        "Nem állhat el, csak felmondhatja.",
+        "Igen.",
+        "Igen, 15 percen belüli teljesítés esetén.",
+        "Igen, de csak akkor, ha a teljes díjat megfizeti."
+    ],
+    correctAnswer: "Nem állhat el, csak felmondhatja."
+},
+{
+    question: "Megtéríthető-e a kötelező biztosítás terhére minden esetben a személyes poggyász kára?",
+    options: [
+        "Igen.",
+        "Igen, de csak 200.000 Ft-ig.",
+        "Nem.",
+        "Nem, mert idegen hibás baleset esetén nem térül meg."
+    ],
+    correctAnswer: "Igen."
+},
+{
+    question: "Megtéríthető-e a kötelező biztosítás terhére minden esetben a poggyászkár?",
+    options: [
+        "Igen.",
+        "Igen, de csak 200.000 Ft-ig.",
+        "Nem.",
+        "Nem, mert idegen hibás baleset esetén nem térül meg."
+    ],
+    correctAnswer:   "Nem."
+}
+            
+            
+            
+            
+            
+            
+           
+            
+           
+
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let errorCount = 0;
+        let answeredQuestions = 0;
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionText = document.getElementById("question");
+            const optionsContainer = document.getElementById("answers");
+
+            questionText.textContent = question.question;
+
+            optionsContainer.innerHTML = "";
+            question.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => {
+                    if (!button.classList.contains("answered")) {
+                        button.classList.add("answered");
+                        checkAnswer(option);
+                    }
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestionIndex];
+            const optionsContainer = document.getElementById("answers");
+
+            const buttons = optionsContainer.getElementsByTagName("button");
+            for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (button.textContent === question.correctAnswer) {
+                    button.classList.add("correct");
+                } else if (button.textContent === selectedOption && selectedOption !== question.correctAnswer) {
+                    button.classList.add("incorrect");
+                }
+                button.disabled = true;  // Disable all buttons after selection
+            }
+
+            if (selectedOption === question.correctAnswer) {
+                score++;
+            } else {
+                errorCount++;
+                document.getElementById("error-count").textContent = `Hibák: ${errorCount} / 5`;
+            }
+
+            answeredQuestions++;
+            document.getElementById("answered").textContent = `Kérdések válaszolva: ${answeredQuestions} / ${questions.length}`;
+
+            if (answeredQuestions < questions.length) {
+                document.getElementById("next-button").style.display = "block";
+            } else {
+                showResults();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+                document.getElementById("next-button").style.display = "none";
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById("quiz-container");
+            let resultText;
+
+            if (errorCount <= 5) {
+                resultText = `<h2 id="success-message">Gratulálok, sikeresen teljesítetted a vizsgát!</h2><div id="celebration">🎉🎆 Tűzijáték! 🎆🎉</div>`;
+            } else {
+                resultText = `<h2 id="failure-message">Sajnos nem sikerült a vizsga! Több mint 5 hibás válasz.</h2>`;
+            }
+
+            quizContainer.innerHTML = resultText;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>

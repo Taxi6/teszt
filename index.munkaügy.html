@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUNKAÜGY KVÍZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003d7a;
+            transform: scale(0.98);
+        }
+
+        #error-count {
+            font-size: 16px;
+            color: red;
+        }
+
+        #answered {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #success-message {
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #failure-message {
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #celebration {
+            display: none;
+            text-align: center;
+            font-size: 30px;
+            color: #ff0;
+        }
+
+        .fireworks {
+            animation: fireworks 1s infinite;
+        }
+
+        @keyframes fireworks {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>MUNKAÜGY KVÍZ</h1>
+        <div id="quiz">
+            <p id="question">Betöltés...</p>
+            <div id="answered">Kérdések válaszolva: 0 / 152</div>
+            <div id="answers"></div>
+            <div id="error-count">Hibák: 0 / 5</div>
+            <button id="next-button" style="display: none;" onclick="nextQuestion()">Tovább</button>
+        </div>
+        <div id="celebration" class="fireworks">
+            🎉🎆 Tűzijáték! Gratulálok a sikeres vizsgához! 🎆🎉
+        </div>
+        <div id="success-message"></div>
+        <div id="failure-message"></div>
+    </div>
+    <script>
+        const questions = [
+            
+    {
+        question: "Szociális hozzájárulási adó köteles-e a végkielégítés címén kifizetett illetmény?",
+        options: [
+            "Egyéni vállalkozó, társas vállalkozó részére fizetik ki.",
+            "Nem.",
+            "Igen.",
+            "Csak akkor, ha munkaviszonyban álló részére fizetik."
+        ],
+        correctAnswer: "Igen."
+    },
+    {
+        question: "Mely időpont számít a munkaviszony kezdetének?",
+        options: [
+            "A munkaruha átvételének napja.",
+            "Ha a szerződés másképp nem rendelkezik a munkaszerződés megkötését követő nap.",
+            "A munkaszerződés aláírásnak napja.",
+            "A munkaköri leírás átvételének napja."
+        ],
+        correctAnswer: "Ha a szerződés másképp nem rendelkezik a munkaszerződés megkötését követő nap."
+    },
+    {
+        question: "A társadalombiztosítás rendszerében mi minősül járuléknak az alábbi közbevételek közül?",
+        options: [
+            "Egészségbiztosítási járulék.",
+            "Személyi jövedelemadó.",
+            "Egyszerűsített vállalkozó adó.",
+            "Társasági adó."
+        ],
+        correctAnswer: "Egészségbiztosítási járulék."
+    },
+    {
+        question: "Mikor jár a munkavállalónak munkaközi szünet?",
+        options: [
+            "Akkor, ha a munkaidő a heti 36 órát eléri, vagy meghaladja.",
+            "Akkor, ha ezt a munkaszerződésben lefektetik.",
+            "Minden munkában töltött 3 óra után.",
+            "Akkor, ha a munkaidő a napi 6 órát meghaladja."
+        ],
+        correctAnswer: "Akkor, ha a munkaidő a napi 6 órát meghaladja."
+    },
+    {
+        question: "Alapbérként legalább…",
+        options: [
+            "Az öregségi nyugdíjminimum kétszeresének összegét kell megállapítani.",
+            "Az öregségi nyugdíjminimum háromszorosának megfelelő összeget kell megállapítani.",
+            "A kötelező legkisebb munkabért kell meghatározni.",
+            "A garantált bérminimumot kell meghatározni."
+        ],
+        correctAnswer: "A garantált bérminimumot kell meghatározni."
+    },
+    {
+        question: "Válassza ki a helyes állítást!",
+        options: [
+            "A felmondás a munkaviszony megszűnésének egyik esete.",
+            "A munkaviszony felmondás esetén a felmondás közlésének napján megszűnik.",
+            "A munkaviszony felmondással megszüntethető.",
+            "A munkaviszony felmondás esetén a felmondás közlésének napját követő napon megszűnik."
+        ],
+        correctAnswer: "A munkaviszony felmondással megszüntethető."
+    },
+    {
+        question: "A teljes napi munkaidő…",
+        options: [
+            "6 óra.",
+            "4 óra.",
+            "10 óra.",
+            "8 óra."
+        ],
+        correctAnswer: "8 óra."
+    },
+    {
+        question: "A munkáltató felmondása esetén a felmondási idő a munkáltatónál munkaviszonyban töltött meghatározott számú évek után…",
+        options: [
+            "Is ugyanannyi marad.",
+            "Csökken.",
+            "Növekszik.",
+            "A másfélszeresére növekszik."
+        ],
+        correctAnswer: "Növekszik."
+    },
+    {
+        question: "Ki minősül az alábbi egyéni vállalkozók közül kiegészítő tevékenységet végzőnek?",
+        options: [
+            "Aki saját jogú nyugdíjas.",
+            "Aki tartósan keresőképtelen.",
+            "Aki rokkantsági nyugdíjas.",
+            "Aki ezt választja és öregségi nyugdíjas."
+        ],
+        correctAnswer: "Aki saját jogú nyugdíjas."
+    },
+    {
+        question: "Mennyi pihenőidőt kell biztosítani az alkalmazott részére a munka befejezése és a másnapi munkakezdés között a Munka Törvénykönyve szerint?",
+        options: [
+            "Legalább 11 órát.",
+            "Legalább 12 órát.",
+            "Legalább 13 órát.",
+            "Legalább 10 órát."
+        ],
+        correctAnswer: "Legalább 11 órát."
+    },
+    {
+        question: "Mikor kell késedelmi pótlékot fizetni?",
+        options: [
+            "Ha a járuléktartozás legalább 30 napig fennáll.",
+            "Ha a bejelentési kötelezettségnek késedelmesen tesznek eleget.",
+            "Ha a bejelentési kötelezettségnek nem tesznek eleget.",
+            "Ha a járulék- és adó befizetése az előírt határidőig nem történik meg."
+        ],
+        correctAnswer: "Ha a járulék- és adó befizetése az előírt határidőig nem történik meg."
+    },
+    {
+        question: "A munkaviszony…",
+        options: [
+            "Munkaszerződéssel jön létre.",
+            "Vállalkozási szerződéssel jön létre.",
+            "Megbízási szerződéssel jön létre.",
+            "Szóban is létre jöhet."
+        ],
+        correctAnswer: "Munkaszerződéssel jön létre."
+    },
+    {
+        question: "Kik jogosultak betegszabadságra?",
+        options: [
+            "Minden TB biztosított.",
+            "Akinek nincs TB hátraléka.",
+            "Minden társas vállalkozó.",
+            "A munkaviszonyban, a közalkalmazotti jogviszonyban, közszolgálati és kormánytisztviselői jogviszonyban állók."
+        ],
+        correctAnswer: "A munkaviszonyban, a közalkalmazotti jogviszonyban, közszolgálati és kormánytisztviselői jogviszonyban állók."
+    },
+    {
+        question: "A munkáltatónak a szabadságot – eltérő megállapodás hiányában- úgy kell kiadnia,",
+        options: [
+            "Hogy tartama legalább összefüggő 10 napot elérjen.",
+            "Ahogy a munkavégzés megkívánja, illetve megengedi.",
+            "Hogy tartama legalább összefüggő 7 napot elérjen.",
+            "Hogy tartama legalább összefüggő 14 napot elérjen."
+        ],
+        correctAnswer: "Hogy tartama legalább összefüggő 14 napot elérjen."
+    },
+    {
+        question: "Mikor szüntethetik meg a felek a munkaviszonyt közös megegyezéssel?",
+        options: [
+            "Csak határozott idejű munkaviszony esetén.",
+            "Bármikor.",
+            "Csak a felmondási idő alatt.",
+            "Csak a próbaidő alatt."
+        ],
+        correctAnswer: "Bármikor."
+    },
+    {
+        question: "A munkavédelmi képviselőt mennyi időre választják?",
+        options: [
+            "Öt évre.",
+            "Határozatlan időre.",
+            "Egy évre.",
+            "Három évre."
+        ],
+        correctAnswer: "Öt évre."
+    },
+    {
+        question: "Ki lehet munkavállaló?",
+        options: [
+            "Mindenki, aki betöltötte a 18. életévét.",
+            "Mindenki, aki betöltötte a 17. életévét.",
+            "Mindenki, aki betöltötte a 16. életévét.",
+            "Az, aki a 16. életévét betöltötte, valamint az iskolai szünet alatt a legalább 15 éves tanuló, vagy aki nappali rendszerű képzés keretében folytat tanulmányokat."
+        ],
+        correctAnswer: "Az, aki a 16. életévét betöltötte, valamint az iskolai szünet alatt a legalább 15 éves tanuló, vagy aki nappali rendszerű képzés keretében folytat tanulmányokat."
+    },
+    {
+        question: "Mikor jöhet létre munkavédelmi bizottság?",
+        options: [
+            "Ha annak létrehozását a munkavédelmi hatóság határozattal előírta.",
+            "Ha a munkavédelmi képviselők száma eléri a hármat, úgy munkahelyi munkavédelmi bizottságot hozhatnak létre.",
+            "Ha annak létrehozását a munkavállalók elhatározzák.",
+            "Ha annak létrehozását a munkáltató elhatározza."
+        ],
+        correctAnswer: "Ha a munkavédelmi képviselők száma eléri a hármat, úgy munkahelyi munkavédelmi bizottságot hozhatnak létre."
+    },
+    {
+    question: "Meddig kell a munkáltatónak az általa foglalkoztatott biztosítottat bejelenteni?",
+         options: [
+            "A munkába lépés napján.",
+            "A tárgyhónap utolsó napján.",
+            "A munkába lépést követő 15 napot követően.",
+            "A biztosítási jogviszonyt megelőző nap, de legkésőbb a biztosítási jogviszony első napján."
+        ],
+        correctAnswer: "A biztosítási jogviszonyt megelőző nap, de legkésőbb a biztosítási jogviszony első napján." 
+  },
+  {
+    question: "Mikor köteles a munkavállaló megtagadni a munkáltató utasításának teljesítését?",
+        options: [
+            "Ha annak teljesítése nem egyezik a munkavállaló világnézeti meggyőződésével.",
+            "Ha annak teljesítésére nem kapott legalább egy munkanappal korábban előzetes utasítást.",
+            "Ha annak teljesítése a közepesnél nagyobb fizikai erőkifejtést igényel.",
+            "Ha annak végrehajtása más személy egészségét vagy a környezetet közvetlenül és súlyosan veszélyezteti."
+         ],
+        correctAnswer: "Ha annak végrehajtása más személy egészségét vagy a környezetet közvetlenül és súlyosan veszélyezteti."
+  },
+  {
+    question: "Mi minősül munkaügyi vitának?",
+   options: [
+      "A munkavállalók egymás közötti konfliktusa.",
+      "A munkáltatók egymás közti nézeteltérése.",
+      "A munkavállaló és a munkáltató a munkaviszonnyal összefüggő vitája.",
+      "A belföldi és külföldi üzletfelek üzleti tárgyalása."
+    ],
+   correctAnswer: "A munkavállaló és a munkáltató a munkaviszonnyal összefüggő vitája." 
+  },
+  {
+    question: "Mikor kell a munkáltatónak az általa az egyszerűsített foglalkoztatás szabályai szerint foglalkoztatottat bejelenteni az elsőfokú adóhatóságnál?",
+     options: [
+      "A foglalkoztatás megkezdését követő munkanapon.",
+      "Nem kell bejelentenie, tekintettel az egyszerűsített foglalkoztatás jellegére.",
+      "A munkavégzés megkezdését megelőzően.",
+      "A munkavégzés befejezését követő munkanapon."
+    ],
+   correctAnswer: "A munkavégzés megkezdését megelőzően."
+  },
+  {
+    question: "Teljes öregségi nyugdíjra jogosult az a nő, aki…",
+      options: [
+      "40 év szolgálati idővel rendelkezik.",
+      "30 év szolgálati idővel rendelkezik.",
+      "35 év szolgálati idővel rendelkezik.",
+      "45 év szolgálati idővel rendelkezik."
+    ],
+    correctAnswer: "40 év szolgálati idővel rendelkezik."
+  },
+  {
+    question: "Az alábbiak közül melyik a munkaszerződés kötelező tartalmi eleme?",
+   options: [
+      "A munkavállaló alapbére és munkaköre.",
+      "A munkavégzés helye.",
+      "A próbaidő időtartama.",
+      "A munkáltatói jogkört gyakorló megjelölése."
+    ],
+   correctAnswer:"A munkavállaló alapbére és munkaköre."
+  },
+  {
+    question: "Általános szabály szerint milyen időtartamra jön létre a munkaviszony?",
+    options: [
+      "Határozatlan időtartamra.",
+      "Határozott időtartamra.",
+      "Szerződésben kikötött próbaidőre.",
+      "5 évre."
+    ],
+  correctAnswer:"Határozatlan időtartamra."
+  },
+  {
+    question: "Ha a munkáltató kárt okoz a munkavállalójának, akkor…",
+    options: [
+      "Csak az elmaradt jövedelmét köteles megtéríteni.",
+      "Csak a dologi veszteséget köteles megtéríteni.",
+      "Csak az átlagkeresetét köteles megtéríteni.",
+      "A kárért teljes mértékben felel."
+    ],
+   correctAnswer:"A kárért teljes mértékben felel." 
+  },
+  {
+    question: "Eltérhet-e a kollektív szerződés szabályozása a törvénybeli szabályozástól?",
+   options: [
+      "Csak a 300 főt meghaladó munkavállalót foglalkoztató vállalkozás esetében.",
+      "Nem.",
+      "Igen, korlátlanul, hiszen a kollektív szerződés a munkáltató és munkavállaló szabad tárgyalásainak eredménye.",
+      "Igen, akár kedvezőbb, akár kedvezőtlenebb szabályokat is tartalmazhat, de csak akkor, ha azt a törvény kifejezetten megengedi."
+    ],
+   correctAnswer: "Igen, akár kedvezőbb, akár kedvezőtlenebb szabályokat is tartalmazhat, de csak akkor, ha azt a törvény kifejezetten megengedi."
+  },
+  {
+        question: "Hova kell benyújtani a saját jogú nyugellátásra való igényt?",
+        options: [
+            "A területileg illetékes kormányhivatal nyugdíjfolyósítási igazgatósághoz.",
+            "A területileg illetékes kormányhivatal nyugdíjbiztosítási igazgatósághoz.",
+            "A munkáltatóhoz.",
+            "A nyugdíjbiztosítási igazgatósághoz."
+        ],
+    correctAnswer:"A területileg illetékes kormányhivatal nyugdíjfolyósítási igazgatósághoz."
+    },
+    {
+        question: "Milyen formában lehet a munkabért megfizetni?",
+        options: [
+            "A munkabért csak a munkavállaló által meghatározott fizetési számlára utalással lehet kifizetni.",
+            "A munkabért készpénzben, utalványban, valamint a munkavállaló által meghatározott fizetési számlára utalással kell kifizetni.",
+            "A munkabért készpénzben vagy a munkavállaló által meghatározott fizetési számlára utalással kell kifizetni.",
+            "A munkabért kizárólag készpénzben lehet kifizetni."
+        ],
+    correctAnswer:"A munkabért készpénzben vagy a munkavállaló által meghatározott fizetési számlára utalással kell kifizetni."
+    },
+    {
+        question: "Válassza ki melyik a helyes megoldás az alábbiak közül?",
+        options: [
+            "A táppénz pénzbeli nyugellátás.",
+            "A táppénz természetbeni egészségbiztosítási ellátás.",
+            "A táppénzt kizárólag a munkáltató fizeti.",
+            "Táppénz keresőképtelenség esetén jár."
+        ],
+  correctAnswer: "Táppénz keresőképtelenség esetén jár."
+    },
+    {
+        question: "Kinek a kötelezettsége a munkabalesetek bejelentése, kivizsgálása és nyilvántartásba vétele?",
+        options: [
+            "Ezen feladatok ellátása nem kötelezettség, hanem csak lehetőség.",
+            "A munkáltató kötelezettsége.",
+            "A munkavállaló és a munkáltató közös kötelezettsége.",
+            "A munkaügyi hatóság kötelezettsége."
+        ],
+       correctAnswer: "A munkáltató kötelezettsége."
+    },
+    {
+        question: "A munkaviszony alanyai…",
+        options: [
+            "A munkáltató és a munkavállaló.",
+            "Akik munkát végeznek.",
+            "A bérbeadó és a bérbevevő.",
+            "A vállalkozó és a megbízott."
+        ],
+       correctAnswer:"A munkáltató és a munkavállaló."
+    },
+    {
+        question: "Mekkora összegű bírságot szabhat ki a munkavédelmi hatóság?",
+        options: [
+            "50.000 forinttól 10.000.000 forintig terjedő összegű bírságot szabhat ki.",
+            "A kiszabható bírság összege maximum 1.000.000 forint.",
+            "Nincsen bírság kiszabásra joga a munkavédelmi hatóságnak.",
+            "10.000 forinttól 50.000 forintig terjedő összegű bírságot szabhat ki."
+        ],
+        correctAnswer: "50.000 forinttól 10.000.000 forintig terjedő összegű bírságot szabhat ki."
+    },
+    {
+        question: "Mi a munkavállaló jogellenes munkaviszony megszüntetésének következménye?",
+        options: [
+            "Büntető eljárás minden esetben.",
+            "Nincs következménye, mert a Munka Törvénykönyve a munkavállalót teljes mértékben védi.",
+            "Meghatározott időtartamú átlagkeresetének megfelelő összeg és kártérítés megfizetésére is kötelezhető.",
+            "Ha a büntető bíróság elítéli, úgy nincs következménye."
+        ],
+    correctAnswer :"Meghatározott időtartamú átlagkeresetének megfelelő összeg és kártérítés megfizetésére is kötelezhető."
+    },
+    {
+        question: "Az alábbiak közül mely jogcímen kifizetett táppénz esetén NEM kell a munkaáltatónak az 1/3-os hozzájárulást fizetnie?",
+        options: [
+            "Baleseti táppénz esetén.",
+            "Közszolgálatot teljesítőnek járó táppénz esetén.",
+            "Kórházi ápolás idejére fizetendő táppénz esetén.",
+            "Közalkalmazottnak fizetett bármely táppénz esetén."
+        ],
+        correctAnswer:"Baleseti táppénz esetén."
+    },
+    {
+        question: "Mennyi a felmondási idő?",
+        options: [
+            "A munkavállalót semmiféle körülmények között nem illeti meg felmondási idő.",
+            "Legalább 30 nap, legfeljebb 6 hónap, határozott idejű munkaviszony esetében legfeljebb a határozott idő leteltéig tarthat.",
+            "Maximum 3 hónap.",
+            "Minimum 6 hónap."
+        ],
+        correctAnswer: "Legalább 30 nap, legfeljebb 6 hónap, határozott idejű munkaviszony esetében legfeljebb a határozott idő leteltéig tarthat."
+    },
+    {
+    "question": "Mi a következménye, ha a munkaszerződés írásba foglalása elmarad?",
+    "options": [
+      "a) A munkaszerződés érvénytelenségére ebben az esetben a munkáltató hivatkozhat, a munkavállaló munkába lépését követő 30 napon belül.",
+      "b) A munkaszerződés a törvény erejénél fogva érvénytelen.",
+      "c) A munkaszerződés érvényességét ez a tény nem érinti.",
+      "d) A munkaszerződés érvénytelenségére ebben az esetben a munkavállaló hivatkozhat, a munkába lépést követő 30 napon belül."
+    ],
+    "correctAnswer": "d) A munkaszerződés érvénytelenségére ebben az esetben a munkavállaló hivatkozhat, a munkába lépést követő 30 napon belül."
+  },
+  {
+    "question": "Mikor jogosult kollektív szerződés kötésére a szakszervezet?",
+    "options": [
+      "a) Minden esetben, kivétel nélkül.",
+      "b) Csak akkor, ha más nem gyakorolja a kollektív szerződéskötési jogát.",
+      "c) Ha tagjainak száma eléri a munkáltató által foglalkoztatott munkavállalók 10%-át.",
+      "d) Szakszervezet nem köthet kollektív szerződést."
+    ],
+    "correctAnswer": "c) Ha tagjainak száma eléri a munkáltató által foglalkoztatott munkavállalók 10%-át."
+  },
+  {
+    "question": "Az alábbiak közül mi tekinthető a munkaszerződés módosításának?",
+    "options": [
+      "a) Az, hogy a dolgozó munkaköri leírása változik.",
+      "b) Az, hogy a dolgozót más munkakörbe helyezik.",
+      "c) Az, hogy a dolgozó munkaruha juttatásban részesül.",
+      "d) Az, hogy a munkáltató a munkavállaló személyi alapbérét felemeli."
+    ],
+    "correctAnswer": "b) Az, hogy a dolgozót más munkakörbe helyezik."
+  },
+  {
+    "question": "A végkielégítés mértéke adott munkáltatónál munkaviszonyban töltött 3 év után…",
+    "options": [
+      "a) Nyolc havi távolléti díj összege.",
+      "b) Félhavi távolléti díj összege.",
+      "c) Kéthavi távolléti díj összege.",
+      "d) Egyhavi távolléti díj összege."
+    ],
+    "correctAnswer": "d) Egyhavi távolléti díj összege."
+  },
+  {
+    "question": "Jár-e végkielégítés, ha munkaviszony megszűnése esetén a munkavállaló nyugdíjasnak minősül?",
+    "options": [
+      "a) Csak akkor, ha a munkaviszony 3 évnél tovább tartott.",
+      "b) Nem.",
+      "c) Igen, minden esetben.",
+      "d) Csak akkor, ha a munkaviszony közös megegyezéssel szűnt meg."
+    ],
+    "correctAnswer": "b) Nem."
+  },
+  {
+    "question": "Milyen mértékig felel a munkavállaló az okozott kárért szándékosan elkövetett károkozás esetén?",
+    "options": [
+      "a) Teljes anyagi felelősséggel tartozik.",
+      "b) Legalább 12 havi átlagkeresetének megfelelő összegig felelős.",
+      "c) Legfeljebb az egyhavi keresete 50%-áig felelős.",
+      "d) Legfeljebb 6 havi átlagkeresetének megfelelő összegig felelős."
+    ],
+    "correctAnswer": "a) Teljes anyagi felelősséggel tartozik."
+  },
+  {
+    "question": "Mikor kell a munkavédelmi oktatást megtartani?",
+    "options": [
+      "a) Csak munkaviszony létesítésekor.",
+      "b) Csak munkakör, munkahely megváltoztatásakor.",
+      "c) Munkába lépéskor, munkahely, munkakör változtatáskor, új munkaeszköz és technológia bevezetésekor.",
+      "d) Csak új technológia alkalmazása esetén."
+    ],
+    "correctAnswer": "c) Munkába lépéskor, munkahely, munkakör változtatáskor, új munkaeszköz és technológia bevezetésekor."
+  },
+  {
+    "question": "A munkáltató nyilvántartja…",
+    "options": [
+      "a) A munkavállaló közeli hozzátartozóinak neveit.",
+      "b) A munkavállaló tulajdonában lévő jármű forgalmi rendszámát.",
+      "c) A rendes és a rendkívüli munkavégzés tartamát.",
+      "d) A munkavállaló a napi munkaidő kezdésének tényleges időpontját."
+    ],
+    "correctAnswer": "c) A rendes és a rendkívüli munkavégzés tartamát."
+  },
+  {
+    "question": "A társas vállalkozásnak a kiegészítő tevékenységet folytatónak minősülő társas vállalkozó után milyen járulékot fizet?",
+    "options": [
+      "a) Egészségügyi szolgáltatási járulékot.",
+      "b) Egészségügyi hozzájárulást.",
+      "c) Egészségbiztosítási járulékot.",
+      "d) Egészségügyi járulékot."
+    ],
+    "correctAnswer": "a) Egészségügyi szolgáltatási járulékot."
+  },
+  {
+    "question": "Hány nap betegszabadság jár a munkavállalónak naptári évenként?",
+    "options": [
+      "a) 25 nap.",
+      "b) 10 nap.",
+      "c) 20 munkanap.",
+      "d) 15 munkanap."
+    ],
+    "correctAnswer": "d) 15 munkanap."
+  },
+  {
+    "question": "Ki kezdeményezheti a munkaszerződés módosítását?",
+    "options": [
+      "a) Csak a munkavállaló.",
+      "b) Csak a munkáltató.",
+      "c) A munkavállaló és a munkáltató egyaránt.",
+      "d) A munkavállaló érdekképviseleti szerve."
+    ],
+    "correctAnswer": "c) A munkavállaló és a munkáltató egyaránt."
+  },
+  {
+    "question": "Mikor kell megfizetni a munkabért?",
+    "options": [
+      "a) Kizárólag a felek megállapodásától függ.",
+      "b) Minden hónap 3. napján.",
+      "c) Eltérő megállapodás hiányában utólag, havonta, a tárgyhót követő hó 10. napjáig.",
+      "d) Eltérő megállapodás hiányában előre, havonta."
+    ],
+    "correctAnswer": "c) Eltérő megállapodás hiányában utólag, havonta, a tárgyhót követő hó 10. napjáig."
+  },
+  {
+    "question": "Mennyi az öregségi nyugdíjkorhatár azon személy esetén, aki 1957-ben született?",
+    "options": [
+      "a) A 62. életév.",
+      "b) A 63. életév.",
+      "c) A 65. életév.",
+      "d) A 66. életév."
+    ],
+    "correctAnswer":  "a) A 62. életév."
+  },
+  {
+    "question": "A munkavállaló részére kifizetett bér után milyen fizetési kötelezettség terheli a munkáltatót?",
+    "options": [
+      "a) Szociális hozzájárulási adó és szakképzési hozzájárulás.",
+      "b) Kizárólag szociális hozzájárulási adó.",
+      "c) Egészségügyi hozzájárulás.",
+      "d) Kizárólag szakképzési hozzájárulás."
+    ],
+    "correctAnswer": "a) Szociális hozzájárulási adó és szakképzési hozzájárulás."
+  },
+  {
+    "question": "Mikor jár baleseti ellátás?",
+    "options": [
+      "a) Munkavégzéssel összefüggésben bekövetkezett balesetekből eredő megbetegedés esetén.",
+      "b) Kizárólag üzemi baleset esetén.",
+      "c) Kizárólag foglalkozási megbetegedés esetén.",
+      "d) Kizárólag fekvőbeteg-gyógyintézeti kezelés esetén."
+    ],
+    "correctAnswer":  "a) Munkavégzéssel összefüggésben bekövetkezett balesetekből eredő megbetegedés esetén."
+  },
+  {
+    "question": "Milyen ellátásra jogosultak a biztosítottak?",
+    "options": [
+      "a) Lakhatási és munkavállalási jog biztosítására.",
+      "b) Szociális és baleseti ellátás biztosítására.",
+      "c) Csak betegségi, baleseti ellátásra és táppénzre.",
+      "d) Egészségbiztosítási és nyugdíjbiztosítási ellátásokra."
+    ],
+    "correctAnswer":  "d) Egészségbiztosítási és nyugdíjbiztosítási ellátásokra."
+  },
+  {
+    "question": "Az alábbiak közül mely esetben szűnik meg az egyéni vállalkozó TB-járulék fizetési kötelezettsége?",
+    "options": [
+      "a) Ha visszaadja vállalkozói igazolványát, illetve a nyilvántartásból való törlését kéri.",
+      "b) Ha a vállalkozó lemond a TB ellátás igénybevételéről.",
+      "c) Ha a vállalkozás veszteségessé válik.",
+      "d) Ha a vállalkozó nyári szabadságát tölti."
+    ],
+    "correctAnswer": "a) Ha visszaadja vállalkozói igazolványát, illetve a nyilvántartásból való törlését kéri."
+  },
+  {
+    "question": "A határozott idejű munkaviszony a munkáltató által, azonnali hatályú felmondással, indoklás nélkül megszüntethető?",
+    "options": [
+      "a) Csak akkor, ha ehhez a munkavállaló is hozzájárul.",
+      "b) Nem, ezt a munkáltató semmiféle körülmények között nem teheti meg.",
+      "c) Igen, de ebben az esetben a munkavállaló által ellátott feladatkörbe nem vehet fel újabb munkavállalót egy éven belül.",
+      "d) Igen, megszűntetheti, de ebben az esetben a munkavállaló jogosult 12 havi, vagy ha a határozott időből hátralévő idő egy évnél rövidebb, a hátralévő időre járó távolléti díjra."
+    ],
+    "correctAnswer": "d) Igen, megszűntetheti, de ebben az esetben a munkavállaló jogosult 12 havi, vagy ha a határozott időből hátralévő idő egy évnél rövidebb, a hátralévő időre járó távolléti díjra."
+  },
+  {
+    "question": "A munkavállaló a munkaviszonyból származó követelése érvényesítése érdekében…",
+    "options": [
+      "a) Bírósághoz fordulhat.",
+      "b) Megállapodást a munkáltatóval nem köthet.",
+      "c) Kizárólag bírósághoz fordulhat.",
+      "d) A munkavégzést minden esetben megtagadhatja."
+    ],
+    "correctAnswer":  "a) Bírósághoz fordulhat."
+  },
+  {
+    "question": "Kötelező-e a munkáltató rendes felmondása esetén a felmondási idő alatti munkavégzés?",
+    "options": [
+      "a) A felmondási idő kötelezően ledolgozandó időhányadát a munkaszerződés kell, hogy tartalmazza.",
+      "b) Igen, a teljes felmondási idő alatt.",
+      "c) Legfeljebb a felmondási időtartam fele alatt.",
+      "d) A munkavállaló egyáltalán nem kötelezhető a felmondási idő alatt munkavégzésre."
+    ],
+    "correctAnswer": "c) Legfeljebb a felmondási időtartam fele alatt."
+  },
+  {
+    "question": "Az alábbi lehetőségek közül melyik igaz a rendkívüli munkavégzésre?",
+    "options": [
+      "a) A készenlét rendkívüli munkaidőnek minősül.",
+      "b) A rendkívüli munkaidőt csak munkaszerződésbe foglalt megállapodás alapján lehet elrendelni.",
+      "c) A rendkívüli munkaidőt el lehet szóban is rendelni.",
+      "d) A rendkívüli munkaidőt csak írásban lehet elrendelni."
+    ],
+    "correctAnswer": "c) A rendkívüli munkaidőt el lehet szóban is rendelni."
+  },
+  {
+    "question": "Mi minősül rendkívüli munkaidőnek?",
+    "options": [
+      "a) Csak a munkaszüneti napokon végzett munka.",
+      "b) A fiatalkorúak napi 6 órát meghaladó munkavégzése.",
+      "c) A munkaidőkeretet meghaladó munkaidő.",
+      "d) Csak a heti pihenőnapokon végzett munka."
+    ],
+    "correctAnswer": "c) A munkaidőkeretet meghaladó munkaidő."
+  },
+  {
+    "question": "A társadalombiztosítás finanszírozására mely fizetési kötelezettség szolgál az alábbiak közül?",
+    "options": [
+      "a) Pénzbeli egészségbiztosítási adó.",
+      "b) Társasági adó.",
+      "c) Nyugdíjjárulék.",
+      "d) Munkaerő-piaci hozzájárulás."
+    ],
+    "correctAnswer": "d) Munkaerő-piaci hozzájárulás."
+  },
+  {
+    "question": "Mikor kell a munkabalesetet kivizsgálni?",
+    "options": [
+      "a) Csak akkor, ha a munkavállaló ezt kifejezetten kéri.",
+      "b) Csak akkor, ha a baleset során személyi sérülés történt.",
+      "c) Csak akkor, ha az illetékes Munkavédelmi Felügyelőség ezt elrendeli.",
+      "d) Minden esetben köteles a munkáltató a munkabalesetet kivizsgálni."
+    ],
+    "correctAnswer": "d) Minden esetben köteles a munkáltató a munkabalesetet kivizsgálni."
+  },
+  {
+    "question": "Az alábbiak közül melyik a munkaviszony megszűnésének esete?",
+    "options": [
+      "a) A munkavállaló halála.",
+      "b) A munkavállaló felmondása.",
+      "c) A munkavállaló azonnali hatályú felmondása.",
+      "d) A munkaviszony közös megegyezéssel történő megszüntetése."
+    ],
+    "correctAnswer":  "a) A munkavállaló halála."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) Ha a másik fél a munkaviszonyból származó lényeges kötelezettségét szándékosan vagy súlyos gondatlansággal jelentős mértékben megszegi, azonnali hatályú felmondásnak van helye.",
+      "b) A munkavállaló a munkaviszonyt azonnali hatályú felmondással bármikor megszüntetheti.",
+      "c) A munkáltató vagy a munkavállaló a munkaviszonyt azonnali hatályú felmondással bármikor megszüntetheti.",
+      "d) A munkáltató vagy a munkavállaló a munkaviszonyt azonnali hatályú felmondással soha nem szüntetheti meg."
+    ],
+    "correctAnswer": "a) Ha a másik fél a munkaviszonyból származó lényeges kötelezettségét szándékosan vagy súlyos gondatlansággal jelentős mértékben megszegi, azonnali hatályú felmondásnak van helye."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) A munkavállaló a munkáltatói utasítás megtagadása esetén a munkáltató külön kérelmére köteles rendelkezésre állni.",
+      "b) A munkavállaló a munkáltatói utasítás megtagadása esetén csak bizonyos esetekben köteles rendelkezésre állni.",
+      "c) A munkavállaló a munkáltatói utasítás megtagadása esetén nem köteles rendelkezésre állni.",
+      "d) A munkavállaló a munkáltatói utasítás megtagadása esetén is köteles rendelkezésre állni."
+    ],
+    "correctAnswer": "d) A munkavállaló a munkáltatói utasítás megtagadása esetén is köteles rendelkezésre állni."
+  },
+  {
+    "question": "Az értékkezelő …",
+    "options": [
+      "a) Csak átvételi elismervény birtokában tartozik felelősséggel az átvett dolog hiányáért.",
+      "b) A hiányért nem, csak a dolog megrongálódásáért felelős.",
+      "c) Átvételi elismervény nélkül is felelősséggel tartozik az átvett dolog hiányáért.",
+      "d) Csak vezető beosztású munkavállaló lehet."
+    ],
+    "correctAnswer": "c) Átvételi elismervény nélkül is felelősséggel tartozik az átvett dolog hiányáért."
+  },
+  {
+    "question": "Megszüntethető-e a munkavállaló munkaviszonya a próbaidő alatt?",
+    "options": [
+      "a) Igen, bármelyik fél azonnali hatállyal, indoklás nélkül megszüntetheti.",
+      "b) Csak a munkavállaló által, rendkívül indokolt esetben.",
+      "c) Csak a munkáltató által, rendkívül indokolt esetben.",
+      "d) Nem."
+    ],
+    "correctAnswer": "a) Igen, bármelyik fél azonnali hatállyal, indoklás nélkül megszüntetheti."
+  },
+  {
+    "question": "Mikor jár baleseti ellátás?",
+    "options": [
+      "a) Üzemi baleset vagy foglalkozási megbetegedés esetén.",
+      "b) Bármely okból bekövetkezett baleset esetén.",
+      "c) Csak közúti baleset esetén.",
+      "d) Csak üzemi baleset esetén."
+    ],
+    "correctAnswer": "a) Üzemi baleset vagy foglalkozási megbetegedés esetén."
+  },
+  {
+    "question": "Az alábbiak közül hogyan szüntethető meg a munkáltató részéről a határozott időre szóló munkaviszony indoklás nélkül?",
+    "options": [
+      "a) Más munkakörbe helyezéssel.",
+      "b) Azonnali hatályú felmondással.",
+      "c) Közös megegyezéssel.",
+      "d) Felmondással."
+    ],
+    "correctAnswer": "c) Közös megegyezéssel."
+  },
+  {
+    "question": "Melyik este nem tartozik a munkaviszony megszüntetésének körébe?",
+    "options": [
+      "a) A munkáltató jogutód nélküli megszűnése.",
+      "b) Felmondás.",
+      "c) Azonnali hatályú felmondás.",
+      "d) Közös megegyezés."
+    ],
+    "correctAnswer": "a) A munkáltató jogutód nélküli megszűnése."
+  },
+  {
+    "question": "Nem jár végkielégítés a munkavállalónak, ha…",
+    "options": [
+      "a) A munkáltató így rendelkezik.",
+      "b) A felmondás oka a munkáltató rossz gazdasági helyzete.",
+      "c) A felmondás közlésének vagy a munkáltató jogutód nélküli megszűnésének időpontjában 62. életévét betöltötte.",
+      "d) A felmondás közlésének vagy a munkáltató jogutód nélküli megszűnésének időpontjában nyugdíjasnak minősül."
+    ],
+    "correctAnswer": "d) A felmondás közlésének vagy a munkáltató jogutód nélküli megszűnésének időpontjában nyugdíjasnak minősül."
+  },
+  {
+    "question": "A tisztességes foglalkoztatás szabályait mely jogszabály határozza meg Magyarországon?",
+    "options": [
+      "a) A Munka Törvénykönyve.",
+      "b) A gazdasági társaságokról szóló törvény.",
+      "c) A tisztességtelen piaci magatartás és a versenykorlátozás tilalmáról szóló törvény.",
+      "d) A Polgári Törvénykönyv."
+    ],
+    "correctAnswer": "a) A Munka Törvénykönyve."
+  },
+  {
+    "question": "Az alábbi esetek közül mikor NEM szüntetheti meg a munkáltató a munkavállaló munkaviszonyát felmondással?",
+    "options": [
+      "a) A szülési szabadság tartama alatt.",
+      "b) Ha a munkavállaló gyermekét egyedül neveli.",
+      "c) Ha a munkavállaló külföldi kiküldetésben van.",
+      "d) Ha a munkavállaló évi rendes szabadságát tölti."
+    ],
+    "correctAnswer":"a) A szülési szabadság tartama alatt."
+  },
+  {
+    "question": "Mikor NEM szüntetheti meg a határozott idejű munkaviszonyt felmondással a munkáltató?",
+    "options": [
+      "a) A gyermek gondozása céljából igénybe vett fizetés nélküli szabadság esetén.",
+      "b) A felszámolási- vagy csődeljárás tartama alatt.",
+      "c) A munkavállaló képességére alapított okból.",
+      "d) Ha a munkaviszony fenntartása elháríthatatlan ok következtében lehetetlenné válik."
+    ],
+    "correctAnswer":"a) A gyermek gondozása céljából igénybe vett fizetés nélküli szabadság esetén." 
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) Azonnali hatályú felmondással próbaidő alatt indoklás nélkül mindkét fél megszüntetheti a munkaviszonyt.",
+      "b) Azonnali hatályú felmondással próbaidő alatt indoklás nélkül csak a munkáltató szüntetheti meg a munkaviszonyt.",
+      "c) Azonnali hatályú felmondással próbaidő alatt indoklás nélkül csak a munkavállaló szüntetheti meg a munkaviszonyt.",
+      "d) Próbaidő alatt a munkaviszonyt megszüntetni csak felmondással lehet."
+    ],
+    "correctAnswer":"a) Azonnali hatályú felmondással próbaidő alatt indoklás nélkül mindkét fél megszüntetheti a munkaviszonyt."
+  },
+  {
+    "question": "Kezdeményezheti-e valamelyik fél a határozott idejű munkaviszony felmondását?",
+    "options": [
+      "a) Csak a munkavállaló.",
+      "b) Csak a munkáltató.",
+      "c) Legfeljebb a próbaidő lejárta után.",
+      "d) Igen, a munkáltató és a munkavállaló egyaránt."
+    ],
+    "correctAnswer": "d) Igen, a munkáltató és a munkavállaló egyaránt."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) A felmondás indoka a munkavállaló munkaviszonnyal kapcsolatos magatartásával, képességével vagy a munkáltató működésével összefüggő ok lehet.",
+      "b) A felmondás indoka kizárólag a munkavállaló munkaviszonnyal kapcsolatos magatartása lehet.",
+      "c) A felmondás indoka kizárólag a munkavállaló képességével összefüggő ok lehet.",
+      "d) A felmondás indoka a munkavállaló egészségi állapotával összefüggő ok lehet."
+    ],
+    "correctAnswer": "a) A felmondás indoka a munkavállaló munkaviszonnyal kapcsolatos magatartásával, képességével vagy a munkáltató működésével összefüggő ok lehet."
+  },
+  {
+    "question": "Kell-e munkavédelmi képviselőt választani a munkáltatónál?",
+    "options": [
+      "a) Csak akkor, ha a munkáltató így dönt.",
+      "b) Csak akkor, ha a munkavállalók kérik.",
+      "c) Csak akkor, ha nagyszámú fiatalkorú munkavállalót foglalkoztat.",
+      "d) Csak akkor, ha a munkavállalók létszáma legalább húsz fő."
+    ],
+    "correctAnswer": "d) Csak akkor, ha a munkavállalók létszáma legalább húsz fő."
+  },
+  {
+    "question": "Kell-e illetéket fizetni, a társadalombiztosítási igények érvényesítéséért?",
+    "options": [
+      "a) Egységesen 1.000 Ft-ot.",
+      "b) Nem, mert általában illeték- és költségmentes.",
+      "c) Egységesen 2.000 Ft-ot.",
+      "d) Egységesen 500 Ft-ot."
+    ],
+    "correctAnswer": "b) Nem, mert általában illeték- és költségmentes."
+  },
+  {
+    "question": "A próbaidő alatt a fél milyen módon szüntetheti meg a munkaviszonyt?",
+    "options": [
+      "a) A felmondás általános szabályai szerint.",
+      "b) Azonnali hatályú felmondással, indoklás nélkül.",
+      "c) Azonnali hatályú felmondással, de indokolni is kötelező.",
+      "d) A próbaidő alatt a munkaviszonyt a fél nem szüntetheti meg."
+    ],
+    "correctAnswer":  "b) Azonnali hatályú felmondással, indoklás nélkül."
+  },
+  {
+    "question": "Mi NEM minősül az alábbiak közül a munkaviszony megszüntetésének?",
+    "options": [
+      "a) A felmondás.",
+      "b) A közös megegyezés.",
+      "c) A határozott idő lejárta.",
+      "d) Az azonnali hatályú felmondás."
+    ],
+    "correctAnswer": "c) A határozott idő lejárta."
+  },
+  {
+    "question": "A munkavállaló fizetéséből mely esetben terjedhet a levonás a bér 50%-áig az alábbiak közül?",
+    "options": [
+      "a) Munkáltatónak a munkavállalóval szemben fennálló munkabér követelés, jogalap nélkül felvett munkabér és társadalombiztosítási ellátás esetén.",
+      "b) Jogalap nélkül felvett munkabér visszatérítésekor.",
+      "c) Munkáltatói kölcsön esetén.",
+      "d) Munkaruha utalvány visszatérítésekor."
+    ],
+    "correctAnswer": "a) Munkáltatónak a munkavállalóval szemben fennálló munkabér követelés, jogalap nélkül felvett munkabér és társadalombiztosítási ellátás esetén."
+  },
+  {
+    "question": "Az alábbiak közül kit nem szabad rendkívüli munkára rendelni?",
+    "options": [
+      "a) Az egyedül élő munkavállalót.",
+      "b) Azt, aki rendszeresen éjszakai műszakban dolgozik.",
+      "c) A gyermekét egyedül nevelő munkavállalót, gyermeke ötéves koráig.",
+      "d) A gyermekét egyedül nevelő munkavállalót, gyermeke hároméves koráig."
+    ],
+    "correctAnswer": "d) A gyermekét egyedül nevelő munkavállalót, gyermeke hároméves koráig."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) A határozatlan idejű munkaviszony felmondását a munkáltató főszabály szerint indokolni köteles.",
+      "b) A határozatlan idejű munkaviszony felmondását a munkáltató főszabály szerint nem köteles indokolni.",
+      "c) A határozatlan idejű munkaviszony felmondását a munkáltató soha nem köteles indokolni.",
+      "d) A határozatlan idejű munkaviszony felmondását akkor köteles indokolni a munkáltató, ha a munkavállaló nyugdíjasnak minősül a felmondás napján."
+    ],
+    "correctAnswer": "a) A határozatlan idejű munkaviszony felmondását a munkáltató főszabály szerint indokolni köteles."
+  },
+  {
+    "question": "Mi NEM minősül az alábbiak közül a munkaviszony megszüntetésének?",
+    "options": [
+      "a) A felmondás.",
+      "b) A közös megegyezés.",
+      "c) A határozott idő lejárta.",
+      "d) Az azonnali hatályú felmondás."
+    ],
+    "correctAnswer": "c) A határozott idő lejárta."
+  },
+  {
+    "question": "Kollektív szerződést köthet…",
+    "options": [
+      "a) A munkáltató és a munkavállaló.",
+      "b) A munkáltató és a szakszervezet.",
+      "c) A munkavállalók és a szakszervezet.",
+      "d) A munkáltató és a munkavállalók."
+    ],
+    "correctAnswer":"b) A munkáltató és a szakszervezet."
+  },
+  {
+    "question": "Mennyi a biztosított által fizetendő nyugdíjjárulék mértéke?",
+    "options": [
+      "a) 15%.",
+      "b) 12%.",
+      "c) 10%.",
+      "d) 8,5%."
+    ],
+    "correctAnswer": "c) 10%."
+  },
+  {
+    "question": "Mennyi a felmondási idő?",
+    "options": [
+      "a) Legfeljebb 14 nap.",
+      "b) Legfeljebb 15 nap.",
+      "c) Legalább 30 nap, legfeljebb 6 hónap.",
+      "d) Legalább 60 nap, legfeljebb 6 hónap."
+    ],
+    "correctAnswer": "c) Legalább 30 nap, legfeljebb 6 hónap."
+  },
+  {
+    "question": "Mikor kezdődik az egyéni vállalkozó járulékfizetési kötelezettsége?",
+    "options": [
+      "a) Nyilvántartásba vételének napján.",
+      "b) Az egészségbiztosítási pénztárhoz történő bejelentkezése napján.",
+      "c) A vállalkozói igazolvány átvételét követő hó 10. napján.",
+      "d) Az első adóköteles bevételét követő 3 napon belül."
+    ],
+    "correctAnswer": "a) Nyilvántartásba vételének napján."
+  },
+  {
+    "question": "Kaphat-e az egyéni vállalkozó táppénzt?",
+    "options": [
+      "a) Igen, kivéve a kiegészítő tevékenységet folytató egyéni vállalkozó.",
+      "b) Csak akkor, ha arra külön szerződést köt.",
+      "c) Csak akkor, ha csak kiegészítő tevékenységet folytat a vállalkozásában.",
+      "d) Nem."
+    ],
+    "correctAnswer": "a) Igen, kivéve a kiegészítő tevékenységet folytató egyéni vállalkozó."
+  },
+  {
+    "question": "Döntse el melyik állítás igaz a táppénzre!",
+    "options": [
+      "a) A táppénz kizárólag az állam kiadása.",
+      "b) A munkáltató nem köteles hozzájárulni a táppénzkiadásokhoz.",
+      "c) Egyharmadát a munkáltató táppénz-hozzájárulásként megfizeti.",
+      "d) Mértéke a személyi alapbér egyharmada."
+    ],
+    "correctAnswer": "c) Egyharmadát a munkáltató táppénz-hozzájárulásként megfizeti."
+  },
+  {
+    "question": "Milyen formában lehet a munkaszerződést módosítani?",
+    "options": [
+      "a) A munkáltató és a munkavállaló közös megegyezéssel módosíthatják. A módosításra is a megkötésre vonatkozó szabályok az irányadóak, így a munkaszerződést csak írásban lehet módosítani.",
+      "b) A munkáltató és a munkavállaló által közösen meghatározott módon, szóban vagy írásban.",
+      "c) A munkaszerződést nem lehet módosítani, ilyen esetben új munkaszerződést kell kötni.",
+      "d) A munkáltató által meghatározott formában, akár szóban is."
+    ],
+    "correctAnswer": "a) A munkáltató és a munkavállaló közös megegyezéssel módosíthatják. A módosításra is a megkötésre vonatkozó szabályok az irányadóak, így a munkaszerződést csak írásban lehet módosítani."
+  },
+  {
+    "question": "Mi a foglalkozási megbetegedés?",
+    "options": [
+      "a) A 8 napon túl gyógyuló sérülések.",
+      "b) Az olyan betegség, amely a foglalkozás különös veszélye folytán keletkezett.",
+      "c) A nem tartós egészségkárosodás.",
+      "d) A 8 napon belül gyógyuló sérülések."
+    ],
+    "correctAnswer":  "b) Az olyan betegség, amely a foglalkozás különös veszélye folytán keletkezett."
+  },
+  {
+    "question": "Milyen esetben hosszabbítható meg a próbaidő mértéke?",
+    "options": [
+      "a) A próbaidő semmiféle körülmények között nem hosszabbítható meg.",
+      "b) A felek egyező akaratával, korlátlanul meghosszabbítható a próbaidő tartama.",
+      "c) A három hónapnál rövidebb időre kikötött próbaidő esetében a felek egy alkalommal meghosszabbíthatják a próbaidőt, melynek tartama a hosszabbítás esetén sem haladhatja meg a 3 hónapot.",
+      "d) A próbaidőt a munkáltató egyoldalúan, legfeljebb 6 hónap időre hosszabbíthatja meg."
+    ],
+    "correctAnswer": "c) A három hónapnál rövidebb időre kikötött próbaidő esetében a felek egy alkalommal meghosszabbíthatják a próbaidőt, melynek tartama a hosszabbítás esetén sem haladhatja meg a 3 hónapot."
+  },
+  {
+    "question": "Mi minősül rendkívüli munkaidőnek?",
+    "options": [
+      "a) A munkaidő kereten belüli munkaidő.",
+      "b) Csak a munkaszüneti napon végzett munka.",
+      "c) Az ügyelet tartama.",
+      "d) Csak a heti pihenőnapon végzett munka."
+    ],
+    "correctAnswer": "c) Az ügyelet tartama."
+  },
+  {
+    "question": "A munkabért…",
+    "options": [
+      "a) Forintban vagy euróban kell megfizetni.",
+      "b) Forintban kell megfizetni.",
+      "c) Bármilyen törvényes fizetőeszközben meg lehet fizetni.",
+      "d) Részben utalványban is meg lehet fizetni."
+    ],
+    "correctAnswer":  "b) Forintban kell megfizetni."
+  },
+  {
+    "question": "El lehet-e térni a munkaszerződésben a Munka Törvénykönyve előírásaitól?",
+    "options": [
+      "a) Igen, tetszés szerint bármikor, hiszen a munkaszerződés a két fél szabad megállapodása.",
+      "b) Igen, ha azt a törvény megengedi és a munkaszerződésben kedvezőbb feltételeket állapítanak meg a munkavállaló számára.",
+      "c) Csak magánmunkáltató esetében.",
+      "d) Nem."
+    ],
+    "correctAnswer":  "b) Igen, ha azt a törvény megengedi és a munkaszerződésben kedvezőbb feltételeket állapítanak meg a munkavállaló számára."
+  },
+  {
+    "question": "Kötelező-e a munkavállalónak a munkát a munkaviszony megszüntetése esetén előírt rendben átadni?",
+    "options": [
+      "a) Nem.",
+      "b) Igen.",
+      "c) Indokolt esetben.",
+      "d) Ha a munkáltató erre kötelezi."
+    ],
+    "correctAnswer": "b) Igen."
+  },
+  {
+    "question": "Mi minősül munkaidőnek?",
+    "options": [
+      "a) Munkavégzés napján reggel 8 órától délután 16 óra 30 percig terjedő időszak.",
+      "b) Munkavégzés napján reggel 8 órától 18 óráig terjedő időszak.",
+      "c) Munkavégzésre előírt idő kezdetétől annak befejezéséig tartó idő, valamint a munkavégzéshez kapcsolódó előkészítő és befejező tevékenység tartama.",
+      "d) Minden olyan idő, amikor munkát végez a munkavállaló."
+    ],
+    "correctAnswer":  "c) Munkavégzésre előírt idő kezdetétől annak befejezéséig tartó idő, valamint a munkavégzéshez kapcsolódó előkészítő és befejező tevékenység tartama."
+  },
+  {
+    "question": "Hány óra munkavégzést követően kell kiadni a munkaközi szünetet?",
+    "options": [
+      "a) Két óra munkavégzést követően.",
+      "b) Három óránként, egyenlő részletekben.",
+      "c) Legalább három óra, legfeljebb hat óra munkavégzést követően.",
+      "d) Hat óra munkavégzést követően."
+    ],
+    "correctAnswer":  "c) Legalább három óra, legfeljebb hat óra munkavégzést követően."
+  },
+  {
+    "question": "A munkaidő-beosztás szerinti napi munkaidőt meghaladóan elrendelt rendkívüli munkaidőben…",
+    "options": [
+      "a) A munkavállalót kizárólag rendes munkabére illeti meg.",
+      "b) A munkavállalót kizárólag bérpótlék illeti meg.",
+      "c) Bérpótlék és rendes munkaidőre járó munkabére illeti meg a munkavállalót.",
+      "d) Megállapodás alapján jár díjazás a munkavállalónak."
+    ],
+    "correctAnswer": "c) Bérpótlék és rendes munkaidőre járó munkabére illeti meg a munkavállalót."
+  },
+  {
+    "question": "A napi munkaidő…",
+    "options": [
+      "a) Teljes napi munkaidő vagy részmunkaidő.",
+      "b) Csak a teljes napi munkaidő.",
+      "c) Csak a részmunkaidő.",
+      "d) A nyolc órát elérő munkaidő."
+    ],
+    "correctAnswer": "a) Teljes napi munkaidő vagy részmunkaidő."
+  },
+  {
+    "question": "Fiatal munkavállaló a…",
+    "options": [
+      "a) Tizenöt évesnél fiatalabb munkavállaló.",
+      "b) Tizenhat évesnél fiatalabb munkavállaló.",
+      "c) Tizenhét évesnél fiatalabb munkavállaló.",
+      "d) Tizennyolc évesnél fiatalabb munkavállaló."
+    ],
+    "correctAnswer":  "d) Tizennyolc évesnél fiatalabb munkavállaló."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) A munkáltató felmondása esetén köteles a munkavállalót legalább a felmondási idő felére a munkavégzés alól felmenteni.",
+      "b) A munkáltató felmondása esetén köteles a munkavállalót a felmondási időre a munkavégzés alól felmenteni.",
+      "c) A munkáltató felmondása esetén köteles a munkavállalót a felmondási idő alatt végig foglalkoztatni.",
+      "d) A munkáltató felmondása esetén köteles a munkavállalót a felmondási idő egészére a munkavégzés alól felmenteni amennyiben a munkavállaló ezt kéri."
+    ],
+    "correctAnswer": "a) A munkáltató felmondása esetén köteles a munkavállalót legalább a felmondási idő felére a munkavégzés alól felmenteni."
+  },
+  {
+    "question": "Jár-e baleseti táppénz üzemi baleset esetén a munkavállalónak?",
+    "options": [
+      "a) Minden esetben.",
+      "b) Nem jár.",
+      "c) Csak akkor, ha keresőképtelenné válik.",
+      "d) Csak akkor, ha nincs összefüggés a keresőképtelenség és a baleset között."
+    ],
+    "correctAnswer": "c) Csak akkor, ha keresőképtelenné válik."
+  },
+  {
+    "question": "Mennyi a próbaidő leghosszabb időtartama?",
+    "options": [
+      "a) Munkaszerződés esetén legfeljebb 3 hónap, és nem hosszabbítható meg.",
+      "b) 30 nap, de legfeljebb egyszer 15 nappal meghosszabbítható.",
+      "c) 3 hónap, de indokolt esetben korlátlanul meghosszabbítható.",
+      "d) Legfeljebb 30 nap."
+    ],
+    "correctAnswer":  "a) Munkaszerződés esetén legfeljebb 3 hónap, és nem hosszabbítható meg."
+  },
+  {
+    "question": "Fizethető-e természetben a munkabér?",
+    "options": [
+      "a) Bizonyos korlátok mellett igen.",
+      "b) Csak idénymunka esetén.",
+      "c) A munkavállaló külön kérése esetén bármikor.",
+      "d) Nem."
+    ],
+    "correctAnswer": "d) Nem."
+  },
+  {
+    "question": "Köteles-e megindokolni a felmondást a munkavállaló?",
+    "options": [
+      "a) Igen, minden esetben.",
+      "b) Csak akkor, ha vezetői állást tölt be.",
+      "c) Csak nagykorú munkavállaló.",
+      "d) Nem."
+    ],
+    "correctAnswer": "d) Nem."
+  },
+  {
+    "question": "Jár-e végkielégítés annak, aki nyugdíjellátásra szerzett jogosultságot?",
+    "options": [
+      "a) Igen.",
+      "b) Csak akkor, ha rokkantsági nyugdíjas.",
+      "c) Csak akkor, ha korkedvezménnyel küldték nyugdíjba.",
+      "d) Nem."
+    ],
+    "correctAnswer": "d) Nem."
+  },
+  {
+    "question": "Mikor nem kell a munkaszerződést írásba foglalni?",
+    "options": [
+      "a) A munkaszerződést mindig írásba kell foglalni.",
+      "b) Ha a munkaviszony egy hónapra jön létre.",
+      "c) Ha a munkáltató jogi személy.",
+      "d) Ha a munkáltató természetes személy."
+    ],
+    "correctAnswer":  "a) A munkaszerződést mindig írásba kell foglalni."
+  },
+  {
+    "question": "Kötelező-e a tanulmányi szerződés írásba foglalása?",
+    "options": [
+      "a) Igen, a tanulmányi szerződést minden esetben írásba kell foglalni.",
+      "b) Csak akkor, ha önként vállalt kötelezettséget tartalmaz a tanulmányi szerződés mindkét fél vonatkozásában.",
+      "c) Nem kötelező, mert a munkáltató szabadon dönt a szerződéskötésről.",
+      "d) A felek szabadon döntik el, hogy írásba foglalják-e szerződésüket."
+    ],
+    "correctAnswer":  "a) Igen, a tanulmányi szerződést minden esetben írásba kell foglalni."
+  },
+  {
+    "question": "Válassza ki a helyes állítást!",
+    "options": [
+      "a) A végkielégítés feltétele, hogy a munkavállaló legalább három éven keresztül a munkáltató alkalmazásában álljon.",
+      "b) A végkielégítés a munkavállalónak mindig jár, ha a munkaviszonyát rendes felmondással szünteti meg a munkáltató.",
+      "c) A végkielégítés a munkavállalónak mindig jár, ha a munkaviszonyát azonnal hatályú felmondással szünteti meg a munkáltató.",
+      "d) A végkielégítés nem jár alanyi jogon akkor sem, ha egyébként feltételei fennállnak."
+    ],
+    "correctAnswer": "a) A végkielégítés feltétele, hogy a munkavállaló legalább három éven keresztül a munkáltató alkalmazásában álljon."
+  },
+  {
+    "question": "A megváltozott munka képességűek milyen ellátásban részesülhetnek az alábbiak közül?",
+    "options": [
+      "a) Rokkantsági nyugdíj.",
+      "b) Rehabilitációs vagy rokkantsági nyugdíj.",
+      "c) Rehabilitációs járadék.",
+      "d) Rokkantsági járadék."
+    ],
+    "correctAnswer": "b) Rehabilitációs vagy rokkantsági nyugdíj."
+  },
+  {
+    "question": "Igaz-e az alábbi állítás: A munkarendet a munkáltató állapítja meg.",
+    "options": [
+      "a) Nem.",
+      "b) Igen.",
+      "c) Igen, de csak a munkavállaló kérelmére.",
+      "d) Nem. A munkáltató kérelmére a munkavállaló állapítja meg."
+    ],
+    "correctAnswer": "b) Igen."
+  },
+  {
+    "question": "Lemondhat-e a munkavállaló előre a munkabéréről?",
+    "options": [
+      "a) Igen, hiszen a munkabér felett kizárólag ő rendelkezhet.",
+      "b) Csak akkor, ha erre írásos megállapodást köt a munkáltatójával.",
+      "c) Csak akkor, ha a lemondás a munkaviszony megtartását szolgálja.",
+      "d) A munkabérre való igényéről előre nem mondhat le."
+    ],
+    "correctAnswer": "d) A munkabérre való igényéről előre nem mondhat le."
+  },
+  {
+    "question": "Mikor illeti meg végkielégítés a munkavállalót?",
+    "options": [
+      "a) A munkáltató felmondása, vagy jogutód nélküli megszűnése esetén.",
+      "b) Csak azonnali hatályú felmondás esetén.",
+      "c) A munkaviszony bármilyen megszüntetése esetén.",
+      "d) Ha a munkavállaló legalább 30 éves."
+    ],
+    "correctAnswer": "a) A munkáltató felmondása, vagy jogutód nélküli megszűnése esetén."
+  },
+  {
+    "question": "A társas vállalkozás tagjának, vagy az egyéni vállalkozónak a nyugdíjjárulék fizetési kötelezettsége…",
+    "options": [
+      "a) Járulékalapot képező jövedelem, de havonta legalább a minimálbér (vagy a garantált bérminimum) 10%-a.",
+      "b) Járulékalapot képező jövedelem, de havonta legalább a minimálbér másfélszeresének 9,5 %-a.",
+      "c) A minimálbér 9%-a.",
+      "d) A minimálbér 10%-a."
+    ],
+    "correctAnswer": "a) Járulékalapot képező jövedelem, de havonta legalább a minimálbér (vagy a garantált bérminimum) 10%-a."
+  },
+  {
+    "question": "Mit jelent a munka díjazásánál az egyenlő bánásmód elve?",
+    "options": [
+      "a) A munkáltató azonos munkabért köteles az azonos munkakörben dolgozóknak fizetni.",
+      "b) A munkáltató a férfi munkavállalók bérével azonos összegű munkabért köteles a női munkavállalónak fizetni.",
+      "c) A munkát egyenlő értéken kell megállapítani.",
+      "d) A munkáltató, a szakszervezet egyetértésével határozza meg az egyenlő mértékű díjazás elveit."
+    ],
+    "correctAnswer": "c) A munkát egyenlő értéken kell megállapítani."
+  },
+  {
+    "question": "Mi minősül az alábbiak közül csoportos létszámleépítésnek?",
+    "options": [
+      "a) Legalább öt munkavállaló munkaviszonyának megszüntetése.",
+      "b) A munkavállalók legalább a felének elbocsátása egy éves időtartamon belül.",
+      "c) Húsznál több és száznál kevesebb munkavállaló foglalkoztatása esetén legalább tíz munkavállaló munkaviszonyának felmondással való megszüntetése 30 napon belül.",
+      "d) Legalább tíz munkavállaló munkaviszonyának megszüntetése."
+    ],
+    "correctAnswer": "c) Húsznál több és száznál kevesebb munkavállaló foglalkoztatása esetén legalább tíz munkavállaló munkaviszonyának felmondással való megszüntetése 30 napon belül."
+  },
+  {
+    "question": "A végkielégítés mértéke az adott munkáltatónál munkaviszonyban töltött legalább 25 év után…",
+    "options": [
+      "a) Háromhavi távolléti díj összege.",
+      "b) Tizenkét havi távolléti díj összege.",
+      "c) Hat havi távolléti díj összege.",
+      "d) Kilenc havi távolléti díj összege."
+    ],
+    "correctAnswer": "c) Hat havi távolléti díj összege."
+  },
+  {
+    "question": "Mennyi szabadság jár a munkavállaló részére, ha munkaviszonya év közben kezdődött vagy szünt meg?",
+    "options": [
+      "a) A munkavállalót a tárgyévre járó alap- és pótszabadságának időarányos része illeti meg.",
+      "b) A munkavállalót a teljes évre járó alap- és pótszabadság megilleti.",
+      "c) A munkavállalót a tárgyévre járó alap- és pótszabadságának fele illeti meg.",
+      "d) A munkavállaló részére ebben az esetben nem jár szabadság."
+    ],
+    "correctAnswer": "a) A munkavállalót a tárgyévre járó alap- és pótszabadságának időarányos része illeti meg."
+  },
+  {
+    "question": "Mennyi a munkavállalót, az életkora után megillető pótszabadság maximális mértéke?",
+    "options": [
+      "a) A munkavállalót pótszabadság csak a munkában töltött ideje és nem az életkora alapján illeti meg.",
+      "b) A munkavállalót ötvenötödik évétől 15 munkanap pótszabadság illeti meg.",
+      "c) A munkavállalót a munkaszerződésben meghatározott mértékű pótszabadság illeti meg.",
+      "d) A munkavállalót negyvenötödik évétől 10 munkanap pótszabadság illeti meg."
+    ],
+    "correctAnswer": "d) A munkavállalót negyvenötödik évétől 10 munkanap pótszabadság illeti meg."
+  },
+  {
+    "question": "A betegszabadság időtartamára",
+    "options": [
+      "a) Átlagkereset jár.",
+      "b) A távolléti díj 70 %-a jár.",
+      "c) Táppénz jár az állami egészségügyi ellátás keretei között.",
+      "d) Alapbér jár."
+    ],
+    "correctAnswer": "b) A távolléti díj 70 %-a jár."
+  },
+  {
+    "question": "Kezdeményezheti-e a munkavállaló a munkaszerződése módosítását a munkáltatónál?",
+    "options": [
+      "a) Nem csak a munkáltató kezdeményezheti a már megkötött munkaszerződés módosítását.",
+      "b) Igen, a munkavállaló is kezdeményezheti a munkaszerződése módosítását, de csak az érdekvédelmi szerveken keresztül.",
+      "c) Igen, a munkavállaló is kezdeményezheti a munkaszerződése módosítását, de csak ha az érdekvédelmi szervezetek előzetesen támogatták.",
+      "d) Igen, a munkavállaló is kezdeményezheti írásban a munkaszerződése módosítását, amelyre a munkáltató 15 napon belül írásban köteles nyilatkozni."
+    ],
+    "correctAnswer": "d) Igen, a munkavállaló is kezdeményezheti írásban a munkaszerződése módosítását, amelyre a munkáltató 15 napon belül írásban köteles nyilatkozni."
+  },
+  {
+    "question": "A baleseti táppénz után fizetendő munkáltatói hozzájárulás mértéke:",
+    "options": [
+      "a) A baleseti táppénz egyharmada.",
+      "b) A baleseti táppénz 100%-a, ha a baleset a munkáltató mulasztásával összefüggő okból következett be.",
+      "c) Nincs munkáltatói táppénz harmad baleseti táppénz esetén.",
+      "d) A baleseti táppénz fele."
+    ],
+    "correctAnswer":  "c) Nincs munkáltatói táppénz harmad baleseti táppénz esetén."
+  },
+  {
+    "question": "Miből áll a munkavállalót minden munkában töltött idő után megillető szabadság?",
+    "options": [
+      "a) Betegszabadságból, rendes szabadságból és rendkívüli szabadságból.",
+      "b) Rendes és rendkívüli szabadságból.",
+      "c) Rendes szabadságból, rendkívüli szabadságból és jutalom szabadságból.",
+      "d) Alap- és pótszabadságból."
+    ],
+    "correctAnswer": "d) Alap- és pótszabadságból."
+  },
+  {
+    "question": "Az alábbiak közül mire terjed ki a Munka Törvénykönyve hatálya?",
+    "options": [
+      "a) Minden munkaviszonyra, amelyben a munkavállaló magyar állampolgár.",
+      "b) Munkáltatóra, munkavállalóra, munkáltatói érdekképviseleti szervre, üzemi tanácsra, szakszervezetre.",
+      "c) Csak azokra a munkaviszonyokra, amelyeket nem szabályoz külön munkaszerződés.",
+      "d) Minden nagykorú magyar állampolgár által létesített munkaviszonyra."
+    ],
+    "correctAnswer": "b) Munkáltatóra, munkavállalóra, munkáltatói érdekképviseleti szervre, üzemi tanácsra, szakszervezetre."
+  },
+  {
+    "question": "A munkavállalónak a munkában töltött idő alapján minden naptári évben szabadság jár. Mennyi az alapszabadság mértéke?",
+    "options": [
+      "a) 15 nap.",
+      "b) 20 munkanap.",
+      "c) 22 munkanap.",
+      "d) 25 munkanap."
+    ],
+    "correctAnswer": "b) 20 munkanap."
+  },
+  {
+    "question": "A munkáltatót terheli-e egyeztetési vagy bejelentési kötelezettség a tervezett csoportos létszámleépítés végrehajtása előtt?",
+    "options": [
+      "a) Kizárólag az állami tulajdonú munkáltatókat terheli előzetes bejelentési kötelezettség a magánszemély munkáltatót nem.",
+      "b) A munkáltatót előzetes bejelentési kötelezettség nem terheli, de a végrehajtott létszámleépítést köteles az állami foglalkoztatási szervnek megküldeni.",
+      "c) A munkáltató, ha csoportos létszámleépítést tervez köteles az üzemi tanáccsal egyeztetni, és a megkötött megállapodást köteles az állami foglalkoztatási szervnek megküldeni.",
+      "d) A munkáltató, ha csoportos létszámleépítést a települési önkormányzat jegyzőjének köteles bejelenteni."
+    ],
+    "correctAnswer": "c) A munkáltató, ha csoportos létszámleépítést tervez köteles az üzemi tanáccsal egyeztetni, és a megkötött megállapodást köteles az állami foglalkoztatási szervnek megküldeni."
+  },
+  {
+    "question": "Válassza ki, hogy a munkáltató által történő munkaviszony megszüntetés mely létszám elérése esetén minősül csoportos létszámleépítésnek?",
+    "options": [
+      "a) A munkáltató által történő minden olyan egyidőben történő felmondás, mely a munkavállalói létszám felét eléri vagy meghaladja.",
+      "b) Ha a munkáltató 20-100 fő közötti foglalkoztatott létszáma esetén, legalább 10 munkavállaló munkaviszonyát 30 napon belül kívánja megszüntetni működésével összefüggő ok miatt.",
+      "c) Ha a munkáltató 100 fő fölött foglalkoztatotti létszáma esetén, legalább 10 munkavállaló munkaviszonyát 30 napon belül kívánja megszüntetni működésével összefüggő ok miatt.",
+      "d) Ha a munkáltató legalább öt munkavállaló munkaviszonyát egyidőben szünteti meg."
+    ],
+    "correctAnswer": "b) Ha a munkáltató 20-100 fő közötti foglalkoztatott létszáma esetén, legalább 10 munkavállaló munkaviszonyát 30 napon belül kívánja megszüntetni működésével összefüggő ok miatt."
+  },
+  {
+    "question": "Válassza ki, hogy a rendes felmondás melyik típusú munkaviszony megszüntetésének az általános módja?",
+    "options": [
+      "a) A határozott időtartamra kötött munkaviszony megszüntetésének a módja.",
+      "b) A részmunkaidős foglalkoztatás megszüntetésének módja.",
+      "c) A határozatlan időtartamra kötött munkaviszony megszüntetésének az általános módja.",
+      "d) Bármilyen jellegű munkajogviszony megszüntetésének általános esete."
+    ],
+    "correctAnswer": "d) Bármilyen jellegű munkajogviszony megszüntetésének általános esete."
+  },
+  {
+    "question": "Mi tartozik a béren kívüli juttatások körébe?",
+    "options": [
+      "a) A Széchenyi Pihenőkártyás juttatás.",
+      "b) Útiköltség térítés a munkába járáshoz.",
+      "c) Az adójóváírás.",
+      "d) A befektetési csomag."
+    ],
+    "correctAnswer": "a) A Széchenyi Pihenőkártyás juttatás."
+  },
+  {
+    "question": "A munkáltató a munkavállaló kérése alapján köteles kiadni a szabadságból…",
+    "options": [
+      "a) A felét.",
+      "b) A harmadát.",
+      "c) Hét munkanapot.",
+      "d) Tizennégy munkanapot."
+    ],
+    "correctAnswer":  "c) Hét munkanapot."
+  },
+  {
+    "question": "Válassza ki, hogy az alábbiak közül a kollektív szerződés rendelkezéseinek hatálya kire NEM terjed ki?",
+    "options": [
+      "a) A fiatalkorú munkavállalókra.",
+      "b) A vezető állású munkavállalóra.",
+      "c) A részmunkaidőben foglalkoztatott munkavállalókra.",
+      "d) A nyugdíjasként foglalkoztatott munkavállalókra."
+    ],
+    "correctAnswer": "b) A vezető állású munkavállalóra."
+  },
+  {
+    "question": "Mi minősül pihenőidőnek?",
+    "options": [
+      "a) A készenlét időtartama, ha nem merül fel konkrét munkafeladat.",
+      "b) A 8 órás munkarendben foglalkoztatottak részére kiadott ebédidő.",
+      "c) A napi munka befejezése, és a következő napi munkakezdés közötti legalább 11 óra egybefüggő pihenőidő.",
+      "d) A napi munka befejezése, és a következő napi munkakezdés közötti legalább 6 óra egybefüggő pihenőidő."
+    ],
+    "correctAnswer": "c) A napi munka befejezése, és a következő napi munkakezdés közötti legalább 11 óra egybefüggő pihenőidő."
+  },
+  {
+    "question": "A kollektív szerződés rendelkezései kire terjednek ki?",
+    "options": [
+      "a) Csak a szerződést kötő felekre.",
+      "b) Csak a munkáltatói érdekképviselet tagjaira.",
+      "c) A kollektív szerződés munkaviszonyra vonatkozó rendelkezéseinek hatálya a munkáltatóval munkaviszonyban álló valamennyi munkavállalóra kiterjed.",
+      "d) Csak a munkáltatónál teljes munkaidőben foglalkoztatott munkavállalókra."
+    ],
+    "correctAnswer": "c) A kollektív szerződés munkaviszonyra vonatkozó rendelkezéseinek hatálya a munkáltatóval munkaviszonyban álló valamennyi munkavállalóra kiterjed."
+  },
+  {
+    "question": "Az alábbi esetek közül a munkáltató mikor NEM szüntetheti meg felmondással a munkavállaló munkaviszonyát?",
+    "options": [
+      "a) A gyermekét egyedül nevelő nő esetében.",
+      "b) A próbaidő alatt.",
+      "c) A várandósság alatt semmilyen esetben.",
+      "d) A várandósság alatt akkor, ha e körülmény fennállásáról a munkavállaló a munkáltatót tájékoztatta."
+    ],
+    "correctAnswer": "d) A várandósság alatt akkor, ha e körülmény fennállásáról a munkavállaló a munkáltatót tájékoztatta."
+  },
+  {
+    "question": "Mennyi a munkavállalót megillető heti pihenőnap általános mértéke?",
+    "options": [
+      "a) A munkavállalót a munkaszerződésben meghatározott mértékű heti pihenőnap illeti meg.",
+      "b) A munkavállalót hetenként két pihenőnap illeti meg.",
+      "c) A munkavállalót hetenként egy pihenőnap illeti meg.",
+      "d) A munkavállalót a munkáltató beosztása szerinti mértékű pihenőnap illeti meg, mely lehet változó mértékű is."
+    ],
+    "correctAnswer": "b) A munkavállalót hetenként két pihenőnap illeti meg."
+  },
+  {
+    "question": "Hány éves kortól létesíthető munkaviszony korlátozás nélkül?",
+    "options": [
+      "a) Csak a 18. évét betöltött természetes személy létesíthet korlátozás nélkül munkajogviszonyt.",
+      "b) Az a magánszemély, aki tanulmányait befejezte már 15 éves kortól munkajogviszonyt létesíthet.",
+      "c) 16 éves kortól korlátlanul létesíthető munkajogviszony a természetes személy által.",
+      "d) Aki nem áll gondnokság alatt az bármilyen életkorban létesíthet munkajogviszonyt."
+    ],
+    "correctAnswer": "c) 16 éves kortól korlátlanul létesíthető munkajogviszony a természetes személy által."
+  },
+  {
+    "question": "Szabadsága idejére a munkavállalónak…",
+    "options": [
+      "a) Alapbér jár.",
+      "b) Minimálbér jár.",
+      "c) Távolléti díj jár.",
+      "d) Átlagkereset jár."
+    ],
+    "correctAnswer": "c) Távolléti díj jár."
+  },
+  {
+    "question": "A betegszabadság lejártát követően a keresőképtelen munkavállaló milyen ellátásban részesülhet?",
+    "options": [
+      "a) Jövedelempótló támogatásban részesül.",
+      "b) A távolléti díj 65%-a illeti meg.",
+      "c) Táppénz jár, mely állami egészségbiztosítási ellátásnak minősül.",
+      "d) Munkáltatói kifizetésként az alapbér 70%-a jár."
+    ],
+    "correctAnswer": "c) Táppénz jár, mely állami egészségbiztosítási ellátásnak minősül."
+  },
+  {
+    "question": "Érvénytelen-e az a munkaszerződés, amelyben a felek nem rendelkeztek a munkaviszony kezdőnapjáról?",
+    "options": [
+      "a) Igen érvénytelen, mert a munkaviszony kezdő napjának meghatározása a munkaszerződés kötelező eleme.",
+      "b) Igen érvénytelen, de az érvénytelenségre csak a munkavállaló hivatkozhat, méghozzá a szerződéskötést követő 30 napig.",
+      "c) Nem érvénytelen, mert a munkaviszony kezdő napja meghatározásának hiányában a munkaviszony kezdő napja a törvény rendelkezése értelmében a munkaszerződés megkötését követő nap.",
+      "d) Nem érvénytelen, mert munkáltató és a munkavállaló később is megállapodhatnak a munkába lépés kezdő napjáról."
+    ],
+    "correctAnswer": "c) Nem érvénytelen, mert a munkaviszony kezdő napja meghatározásának hiányában a munkaviszony kezdő napja a törvény rendelkezése értelmében a munkaszerződés megkötését követő nap."
+  },
+  {
+    "question": "A társas vállalkozás tagjának, vagy az egyéni vállalkozónak a nyugdíjjárulék fizetési kötelezettsége….",
+    "options": [
+      "a) Járulékalapot képező jövedelem, de havonta legalább a minimálbér (vagy a garantált bérminimum) 10% -a.",
+      "b) Járulékalapot képező jövedelem, de havonta legalább a minimálbér másfélszeresének 9,5%-a.",
+      "c) A minimálbér 9%-a.",
+      "d) A minimálbér 10%-a."
+    ],
+    "correctAnswer":  "a) Járulékalapot képező jövedelem, de havonta legalább a minimálbér (vagy a garantált bérminimum) 10% -a."
+  },
+  {
+    "question": "Meg lehet-e pénzben váltani a szabadságot?",
+    "options": [
+      "a) A munkaviszony megszűnésekor megváltható pénzben, a természetben ki nem vett szabadság.",
+      "b) A munkavállaló kérésére bármikor.",
+      "c) A munkáltató döntése szerint bármikor megváltható a szabadság.",
+      "d) Nem, hiszen a szabadság a munkavállaló regenerálódását szolgálja."
+    ],
+    "correctAnswer": "a) A munkaviszony megszűnésekor megváltható pénzben, a természetben ki nem vett szabadság."
+  },
+  {
+    "question": "A szabadságot…",
+    "options": [
+      "a) A munkavállaló kérésének megfelelő időpontban kell teljes egészében kiadni.",
+      "b) Meg lehet váltani.",
+      "c) A munkáltató adja ki.",
+      "d) Fele részben a munkáltató adja ki."
+    ],
+    "correctAnswer": "c) A munkáltató adja ki."
+  },
+  {
+    "question": "Jár-e végkielégítés, ha a munkavállaló munkaviszonya a munkáltató jogutód nélküli megszűnése miatt szűnik meg?",
+    "options": [
+      "a) Nem, mert végkielégítés kizárólag a munkáltató által gyakorolt rendes felmondás esetén illeti meg a munkavállalót.",
+      "b) Igen, mert végkielégítés a munkáltató felmondása, és a munkáltató jogutód nélküli megszűnése esetén is megilleti a munkavállalót.",
+      "c) Csak ha a munkáltatónál lévő kollektív szerződés így rendelkezik.",
+      "d) Nem, mert jogutód nélküli megszűnése esetén nincs, aki a végkielégítést megfizesse."
+    ],
+    "correctAnswer": "b) Igen, mert végkielégítés a munkáltató felmondása, és a munkáltató jogutód nélküli megszűnése esetén is megilleti a munkavállalót."
+  },
+  {
+    "question": "Hány kollektív szerződés lehet egyszerre érvényben egy munkáltatónál?",
+    "options": [
+      "a) A munkáltató egy kollektív szerződés köthet.",
+      "b) A munkáltató minden érdekképviseleti szervvel egy-egy kollektív szerződés köthet.",
+      "c) A munkáltató mind a székhelye, és mind a telephelye szerint szerveződött érdekképviseleti szerv kezdeményezésére is köthet kollektív szerződést.",
+      "d) A munkáltató, és a szakszervezet belátása szerint több kollektív szerződést is köthet."
+    ],
+    "correctAnswer": "a) A munkáltató egy kollektív szerződés köthet." 
+  },
+  {
+    "question": "Fő szabályként mely összeg után köteles szociális hozzájárulási adót fizetni a társas vállalkozás a főfoglalkozású tagjai után, ha a főtevékenység középfokú iskolai végzettséget igényel?",
+    "options": [
+      "a) A személyes közreműködés alapján kiosztott tényleges jövedelem után.",
+      "b) A személyes közreműködés alapján kiosztott jövedelem, de legalább a január 1-én érvényes létminimum után.",
+      "c) A személyes közreműködésért kifizetett járulékalapot képező jövedelem, de legalább a garantált bérminimum 112,5 %-a után.",
+      "d) A személyes közreműködés alapján kiosztott jövedelem, de legalább a megelőző évben érvényes minimálbér után."
+    ],
+    "correctAnswer": "c) A személyes közreműködésért kifizetett járulékalapot képező jövedelem, de legalább a garantált bérminimum 112,5 %-a után."
+  },
+  {
+    "question": "Válassza ki, hogy az alábbiak közül mely területen végzett munkára kell a Munka Törvénykönyve rendelkezéseit alkalmazni?",
+    "options": [
+      "a) Kizárólag a magyar munkáltató által foglalkoztatott magyar munkavállalónak Magyarország területén történő munkavégzésére kell alkalmazni.",
+      "b) Ha a munkavállaló magyar állampolgár, úgy annak bárhol történő munkavégzésére a magyar Munka Törvénykönyve rendelkezései az irányadó.",
+      "c) Ha a munkáltató Magyarországon bejegyzett gazdasági társaság vagy magyar egyéni vállalkozó, úgy minden általuk foglalkoztatott munkavállalóra magyar Munka Törvénykönyve rendelkezéseit kell alkalmazni.",
+      "d) A Munka Törvénykönyvét akkor kell alkalmazni, ha a munkavállaló a munkát rendszerint Magyarországon végzi."
+    ],
+    "correctAnswer": "d) A Munka Törvénykönyvét akkor kell alkalmazni, ha a munkavállaló a munkát rendszerint Magyarországon végzi."
+  },
+  {
+    "question": "Megszüntethető-e a nyugdíjasnak nem minősülő munkavállaló határozatlan időtartamú munkaviszonya a nyugdíjkorhatár betöltését megelőző 5 éven belül?",
+    "options": [
+      "a) Nem, mert az ilyen munkavállaló felmondási védelem alatt áll.",
+      "b) Megszüntethető, de csak ha a munkáltató megindokolja a felmondását.",
+      "c) Megszüntethető a szakszervezet előzetes egyetértésével.",
+      "d) Megszüntethető, de csak ha a munkáltató a felmondását azonnali hatályú felmondási okra alapította."
+    ],
+    "correctAnswer": "d) Megszüntethető, de csak ha a munkáltató a felmondását azonnali hatályú felmondási okra alapította."
+  },
+  {
+    "question": "Válassza ki melyik állítás a helyes!",
+    "options": [
+      "a) A törvény munkaviszonyra vonatkozó előírásaitól, kizárólag a kollektív szerződés rendelkezései térhetnek el még a munkáltató hátrányára is.",
+      "b) A munkáltató és a munkavállaló közös megegyezése esetén a munkaszerződésben bármely irányban eltérhetnek törvény előírásaitól.",
+      "c) A munkaszerződésben a munkáltató egyoldalúan is tehet a munkáltató javára eltérő rendelkezést.",
+      "d) A munkaszerződésben a munkavállaló egyoldalúan is tehet a munkavállaló javára eltérő rendelkezést."
+    ],
+    "correctAnswer": "a) A törvény munkaviszonyra vonatkozó előírásaitól, kizárólag a kollektív szerződés rendelkezései térhetnek el még a munkáltató hátrányára is."
+  },
+  {
+    "question": "Mi a bérpótlék számítás alapja?",
+    "options": [
+      "a) A munkavállaló alapbére.",
+      "b) A munkáltató által meghatározott érték, mely mindig eltér a munkavállaló alapbérétől.",
+      "c) Egyéb megállapodás hiányában a bérpótlék számításának alapja a munkavállaló alapbére.",
+      "d) A munkavállaló bérpótlékának számítási alapja a munkáltató által foglalkoztatott munkavállalók átlagos alapbére."
+    ],
+    "correctAnswer": "c) Egyéb megállapodás hiányában a bérpótlék számításának alapja a munkavállaló alapbére."
+  },
+  {
+    "question": "Válassza ki melyik állítás a helyes!",
+    "options": [
+      "a) Munkáltató köteles megtéríteni a munkavállalónak a munkaviszonnyal összefüggésben okozott kárt.",
+      "b) A munkáltató csak akkor köteles megtéríteni a munkavállalónak a munkaviszonnyal összefüggésben okozott kárt, amennyiben a kárért a munkáltató felelős.",
+      "c) A munkáltató csak kivételesen indokolt esetben köteles megtéríteni a munkavállalónak a munkaviszonnyal összefüggésben okozott kárt.",
+      "d) Munkáltató nem köteles megtéríteni a munkavállalónak a munkaviszonnyal összefüggésben okozott kárt."
+    ],
+    "correctAnswer": "b) A munkáltató csak akkor köteles megtéríteni a munkavállalónak a munkaviszonnyal összefüggésben okozott kárt, amennyiben a kárért a munkáltató felelős."
+  },
+  {
+    "question": "Mi a társas vállalkozás tagjának az egészségbiztosítási- és munkaerő-piaci járulék fizetésének alapja?",
+    "options": [
+      "a) A tagi jövedelem-kivét, a vállalkozói jövedelem-kivét, de havonta legalább a minimálbér 150 %-a.",
+      "b) A tagi jövedelem-kivét, a vállalkozói jövedelem-kivét összege.",
+      "c) A tagi jövedelem-kivét, a vállalkozói jövedelem-kivét, de havonta legalább a minimálbér.",
+      "d) A tagi jövedelem-kivét, a vállalkozói jövedelem-kivét, de legalább a minimálbér."
+    ],
+    "correctAnswer": "c) A tagi jövedelem-kivét, a vállalkozói jövedelem-kivét, de havonta legalább a minimálbér."
+  }
+];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let errorCount = 0;
+        let answeredQuestions = 0;
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionText = document.getElementById("question");
+            const optionsContainer = document.getElementById("answers");
+
+            questionText.textContent = question.question;
+
+            optionsContainer.innerHTML = "";
+            question.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => {
+                    if (!button.classList.contains("answered")) {
+                        button.classList.add("answered");
+                        checkAnswer(option);
+                    }
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestionIndex];
+            const optionsContainer = document.getElementById("answers");
+
+            const buttons = optionsContainer.getElementsByTagName("button");
+            for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (button.textContent === question.correctAnswer) {
+                    button.classList.add("correct");
+                } else if (button.textContent === selectedOption && selectedOption !== question.correctAnswer) {
+                    button.classList.add("incorrect");
+                }
+                button.disabled = true;  // Disable all buttons after selection
+            }
+
+            if (selectedOption === question.correctAnswer) {
+                score++;
+            } else {
+                errorCount++;
+                document.getElementById("error-count").textContent = `Hibák: ${errorCount} / 5`;
+            }
+
+            answeredQuestions++;
+            document.getElementById("answered").textContent = `Kérdések válaszolva: ${answeredQuestions} / ${questions.length}`;
+
+            if (answeredQuestions < questions.length) {
+                document.getElementById("next-button").style.display = "block";
+            } else {
+                showResults();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+                document.getElementById("next-button").style.display = "none";
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById("quiz-container");
+            let resultText;
+
+            if (errorCount <= 5) {
+                resultText = `<h2 id="success-message">Gratulálok, sikeresen teljesítetted a vizsgát!</h2><div id="celebration">🎉🎆 Tűzijáték! 🎆🎉</div>`;
+            } else {
+                resultText = `<h2 id="failure-message">Sajnos nem sikerült a vizsga! Több mint 5 hibás válasz.</h2>`;
+            }
+
+            quizContainer.innerHTML = resultText;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
