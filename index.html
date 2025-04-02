@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kvíz Választó</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('hatter.jpg'); /* Helyettesítsd a háttérkép nevével */
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Válassz egy kvízt!</h1>
+        <button onclick="location.href='munka.html'">Munkaügy</button>
+        <button onclick="location.href='vallalkozas.html'">Vállalkozástan</button>
+        <button onclick="location.href='szakmai.html'">Szakmai kérdések</button>
+        <button onclick="location.href='gazdasag.html'">Gazdaságtan</button>
+    </div>
+</body>
+</html>
